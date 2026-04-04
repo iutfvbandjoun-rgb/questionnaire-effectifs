@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saisie des Effectifs – IPES</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f1923;
+    --paper: #f7f5f0;
+    --cream: #ede9e0;
+    --accent: #1a56a0;
+    --accent-light: #e8f0fb;
+    --gold: #c4902a;
+    --success: #1a7a4a;
+    --danger: #c0392b;
+    --border: #d4cfc5;
+    --muted: #7a7268;
+    --card: #ffffff;
+    --shadow: 0 2px 12px rgba(15,25,35,0.08);
+    --shadow-lg: 0 8px 32px rgba(15,25,35,0.13);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--ink);
+    color: #fff;
+    padding: 28px 0 0;
+    position: relative;
+    overflow: hidden;
+  }
+  header::after {
+    content: '';
+    display: block;
+    height: 6px;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--accent) 100%);
+  }
+  .header-inner {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 24px 24px;
+  }
+  .header-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    border-radius: 2px;
+    padding: 3px 10px;
+    margin-bottom: 14px;
+  }
+  header h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(22px, 4vw, 32px);
+    font-weight: 400;
+    line-height: 1.2;
+    color: #fff;
+  }
+  header h1 em {
+    font-style: italic;
+    color: #b8cfe8;
+  }
+  header p.subtitle {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #8fa8c2;
+    font-weight: 300;
+  }
+
+  /* ── Main ── */
+  main {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  /* ── Progress ── */
+  .progress-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    align-items: center;
+  }
+  .progress-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .progress-step .dot {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--cream);
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .progress-step.active .dot { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .progress-step.done .dot { background: var(--success); border-color: var(--success); color: #fff; }
+  .progress-step.active { color: var(--accent); }
+  .progress-step.done { color: var(--success); }
+  .progress-line {
+    flex: 1; height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    position: relative;
+    overflow: hidden;
+  }
+  .progress-line .fill {
+    position: absolute; left: 0; top: 0; height: 100%;
+    background: var(--success);
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* ── Card / Step ── */
+  .step { display: none; }
+  .step.active { display: block; animation: fadeUp 0.35s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 32px 28px;
+    box-shadow: var(--shadow);
+  }
+
+  .step-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .step-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .step-hint {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  /* ── Autocomplete field ── */
+  .field-wrap { position: relative; margin-bottom: 8px; }
+
+  .ac-input {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--ink);
+    background: var(--paper);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 13px 44px 13px 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+  .ac-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(26,86,160,0.10);
+    background: #fff;
+  }
+  .ac-input.has-value { border-color: var(--success); background: #fff; }
+  .ac-input.manual { border-color: var(--gold); }
+
+  .ac-icon {
+    position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+  .ac-input:focus ~ .ac-icon { color: var(--accent); }
+  .ac-input.has-value ~ .ac-icon { color: var(--success); }
+
+  /* Dropdown */
+  .ac-dropdown {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+    background: #fff;
+    border: 1.5px solid var(--accent);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+  }
+  .ac-dropdown.open { display: block; animation: fadeDown 0.15s ease; }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .ac-item {
+    padding: 10px 16px;
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: background 0.12s;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ac-item:hover, .ac-item.highlighted {
+    background: var(--accent-light);
+    color: var(--accent);
+  }
+  .ac-item mark {
+    background: none;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .ac-empty {
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    text-align: center;
+  }
+  .ac-manual-option {
+    padding: 10px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--gold);
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 500;
+  }
+  .ac-manual-option:hover { background: #fffaf0; }
+
+  /* Tag / selected pill */
+  .selected-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent-light);
+    border: 1.5px solid var(--accent);
+    color: var(--accent);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 8px;
+    cursor: pointer;
+  }
+  .selected-tag:hover { background: #d0e3f8; }
+  .selected-tag svg { flex-shrink: 0; }
+
+  .manual-tag {
+    background: #fffaf0;
+    border-color: var(--gold);
+    color: #8a6200;
+  }
+
+  /* Effectif input */
+  .effectif-wrap {
+    display: flex; align-items: center; gap: 16px;
+    margin-top: 16px;
+  }
+  .effectif-btn {
+    width: 44px; height: 44px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--paper);
+    font-size: 22px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+  .effectif-btn:hover { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+  .effectif-input {
+    flex: 1;
+    text-align: center;
+    font-family: 'Instrument Serif', serif;
+    font-size: 40px;
+    font-weight: 400;
+    color: var(--ink);
+    background: none;
+    border: none;
+    outline: none;
+    width: 100%;
+  }
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+  /* Navigation */
+  .nav-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 28px;
+  }
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    border: none; border-radius: 8px;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 2px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--ink); color: var(--ink); }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(26,86,160,0.25);
+  }
+  .btn-primary:hover { background: #154a8a; box-shadow: 0 4px 16px rgba(26,86,160,0.3); }
+  .btn-primary:disabled { background: var(--border); color: var(--muted); box-shadow: none; cursor: not-allowed; }
+  .btn-success {
+    background: var(--success);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(26,122,74,0.25);
+  }
+  .btn-success:hover { background: #155e38; }
+
+  /* Summary / review */
+  .summary-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-bottom: 24px;
+  }
+  @media (max-width: 480px) { .summary-grid { grid-template-columns: 1fr; } }
+  .summary-item {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .summary-item .s-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .summary-item .s-value {
+    font-family: 'Instrument Serif', serif;
+    font-size: 16px;
+    color: var(--ink);
+  }
+  .summary-item.effectif .s-value {
+    font-size: 32px;
+    color: var(--accent);
+  }
+
+  /* Responses list */
+  .responses-list {
+    margin-top: 24px;
+  }
+  .response-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: 2fr 3fr 1.5fr 80px auto;
+    gap: 10px;
+    align-items: center;
+    font-size: 13px;
+  }
+  @media (max-width: 600px) {
+    .response-card { grid-template-columns: 1fr; border-left-width: 3px; }
+  }
+  .response-card .rc-label { color: var(--muted); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+  .response-card .rc-val { font-weight: 500; font-size: 13.5px; }
+  .response-card .rc-eff { font-family: 'Instrument Serif', serif; font-size: 22px; color: var(--accent); text-align: center; }
+  .btn-del {
+    background: none; border: 1px solid #e8d5d5; border-radius: 6px;
+    color: var(--danger); cursor: pointer; padding: 6px 8px;
+    font-size: 12px; transition: all 0.15s;
+  }
+  .btn-del:hover { background: #fdf0f0; border-color: var(--danger); }
+
+  /* Add more */
+  .add-more {
+    text-align: center;
+    margin-top: 18px;
+  }
+
+  /* Google Sheets export panel */
+  .export-panel {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 28px;
+  }
+  .export-panel h3 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 6px;
+  }
+  .export-panel p {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+  .export-steps {
+    counter-reset: step;
+    list-style: none;
+    margin-bottom: 20px;
+  }
+  .export-steps li {
+    counter-increment: step;
+    display: flex; align-items: flex-start; gap: 12px;
+    font-size: 13px;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .export-steps li::before {
+    content: counter(step);
+    min-width: 22px; height: 22px;
+    background: var(--accent); color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .export-steps li a { color: var(--accent); }
+  .export-steps li code {
+    background: var(--cream);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 12px;
+    font-family: monospace;
+  }
+  .csv-area {
+    width: 100%;
+    font-family: monospace;
+    font-size: 11px;
+    background: #f0f4f8;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    resize: vertical;
+    min-height: 100px;
+    color: #2a3a4a;
+  }
+  .export-btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: #fff;
+    border-radius: 8px; padding: 12px 20px;
+    font-size: 13px; font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    opacity: 0; transition: all 0.3s; z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center; padding: 40px 20px;
+    color: var(--muted);
+  }
+  .empty-state svg { margin-bottom: 12px; opacity: 0.3; }
+  .empty-state p { font-size: 14px; }
+
+  /* Scrollbar */
+  .ac-dropdown::-webkit-scrollbar { width: 6px; }
+  .ac-dropdown::-webkit-scrollbar-track { background: transparent; }
+  .ac-dropdown::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-badge">Formulaire officiel</div>
+    <h1>Saisie des <em>Effectifs</em> — IPES Région Ouest</h1>
+    <p class="subtitle">Renseignez l'établissement, la filière, la ville et l'effectif pour chaque entrée.</p>
+  </div>
+</header>
+
+<main>
+
+  <!-- Progress -->
+  <div class="progress-bar" id="progressBar">
+    <div class="progress-step active" id="ps1">
+      <div class="dot">1</div><span>IPES</span>
+    </div>
+    <div class="progress-line"><div class="fill" id="line1"></div></div>
+    <div class="progress-step" id="ps2">
+      <div class="dot">2</div><span>Filière</span>
+    </div>
+    <div class="progress-line"><div class="fill" id="line2"></div></div>
+    <div class="progress-step" id="ps3">
+      <div class="dot">3</div><span>Ville</span>
+    </div>
+    <div class="progress-line"><div class="fill" id="line3"></div></div>
+    <div class="progress-step" id="ps4">
+      <div class="dot">4</div><span>Effectif</span>
+    </div>
+    <div class="progress-line"><div class="fill" id="line4"></div></div>
+    <div class="progress-step" id="ps5">
+      <div class="dot">5</div><span>Récap.</span>
+    </div>
+  </div>
+
+  <!-- STEP 1: IPES -->
+  <div class="step active" id="step1">
+    <div class="card">
+      <div class="step-label">Étape 1 sur 4</div>
+      <div class="step-title">Quel est l'IPES ?</div>
+      <div class="step-hint">Tapez les premières lettres pour filtrer la liste. Si votre IPES n'apparaît pas, saisissez-le manuellement.</div>
+      <div class="field-wrap" id="fw-ipes">
+        <input type="text" class="ac-input" id="inp-ipes" placeholder="Ex: ISB, IUC, ESCA…" autocomplete="off" autocorrect="off" spellcheck="false">
+        <svg class="ac-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <div class="ac-dropdown" id="dd-ipes"></div>
+      </div>
+      <div id="tag-ipes"></div>
+      <div class="nav-row">
+        <span></span>
+        <button class="btn btn-primary" id="btn-next1" disabled onclick="goTo(2)">
+          Suivant <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Filière -->
+  <div class="step" id="step2">
+    <div class="card">
+      <div class="step-label">Étape 2 sur 4</div>
+      <div class="step-title">Quelle est la filière ?</div>
+      <div class="step-hint">Tapez pour filtrer parmi les 56 filières disponibles, ou saisissez manuellement.</div>
+      <div class="field-wrap" id="fw-filiere">
+        <input type="text" class="ac-input" id="inp-filiere" placeholder="Ex: Génie logiciel, Bâtiment…" autocomplete="off" autocorrect="off" spellcheck="false">
+        <svg class="ac-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <div class="ac-dropdown" id="dd-filiere"></div>
+      </div>
+      <div id="tag-filiere"></div>
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="goTo(1)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour
+        </button>
+        <button class="btn btn-primary" id="btn-next2" disabled onclick="goTo(3)">
+          Suivant <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Ville -->
+  <div class="step" id="step3">
+    <div class="card">
+      <div class="step-label">Étape 3 sur 4</div>
+      <div class="step-title">Dans quelle ville ?</div>
+      <div class="step-hint">Sélectionnez la ville parmi la liste ou saisissez-en une autre.</div>
+      <div class="field-wrap" id="fw-ville">
+        <input type="text" class="ac-input" id="inp-ville" placeholder="Ex: Bafoussam, Dschang…" autocomplete="off" autocorrect="off" spellcheck="false">
+        <svg class="ac-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+        </svg>
+        <div class="ac-dropdown" id="dd-ville"></div>
+      </div>
+      <div id="tag-ville"></div>
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="goTo(2)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour
+        </button>
+        <button class="btn btn-primary" id="btn-next3" disabled onclick="goTo(4)">
+          Suivant <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: Effectif -->
+  <div class="step" id="step4">
+    <div class="card">
+      <div class="step-label">Étape 4 sur 4</div>
+      <div class="step-title">Combien d'étudiants ?</div>
+      <div class="step-hint">Saisissez l'effectif total pour cette filière dans cet IPES.</div>
+      <div class="effectif-wrap">
+        <button class="effectif-btn" onclick="adjustEff(-10)" title="-10">−</button>
+        <input type="number" class="effectif-input" id="inp-eff" value="" min="0" placeholder="0">
+        <button class="effectif-btn" onclick="adjustEff(10)" title="+10">+</button>
+      </div>
+      <div style="text-align:center; margin-top:6px;">
+        <span style="font-size:11px; color:var(--muted);">Cliquez − / + par paliers de 10, ou saisissez directement</span>
+      </div>
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="goTo(3)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour
+        </button>
+        <button class="btn btn-primary" id="btn-next4" onclick="goToReview()">
+          Vérifier <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 5: Récapitulatif + validation -->
+  <div class="step" id="step5">
+    <div class="card">
+      <div class="step-label">Récapitulatif</div>
+      <div class="step-title">Vérifiez avant d'enregistrer</div>
+      <div class="step-hint" id="recap-hint"></div>
+
+      <div class="summary-grid" id="summary-grid"></div>
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="goTo(4)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Modifier
+        </button>
+        <button class="btn btn-success" onclick="saveEntry()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Enregistrer
+        </button>
+      </div>
+    </div>
+
+    <!-- Existing entries -->
+    <div id="entries-section" style="margin-top: 32px; display:none;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+        <div>
+          <div style="font-family:'Instrument Serif',serif; font-size:18px;">Entrées enregistrées</div>
+          <div style="font-size:12px; color:var(--muted);" id="entries-count"></div>
+        </div>
+        <button class="btn btn-ghost" onclick="newEntry()" style="font-size:13px; padding:9px 16px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg> Ajouter
+        </button>
+      </div>
+      <div class="responses-list" id="responses-list"></div>
+
+      <!-- Export panel -->
+      <div class="export-panel" id="export-panel" style="display:none;">
+        <h3>📊 Exporter vers Google Sheets</h3>
+        <p>Copiez les données ci-dessous et importez-les dans Google Sheets en quelques clics.</p>
+        <ol class="export-steps">
+          <li>Cliquez sur <strong>"Copier CSV"</strong> ci-dessous.</li>
+          <li>Ouvrez <a href="https://sheets.new" target="_blank">sheets.new</a> pour créer une nouvelle feuille Google.</li>
+          <li>Cliquez sur une cellule vide, puis <code>Ctrl+V</code> (ou <code>Cmd+V</code>) pour coller.</li>
+          <li>Dans le menu : <strong>Données → Fractionner le texte en colonnes</strong>, choisir <code>Virgule</code> comme séparateur.</li>
+          <li>Vos données apparaîtront en colonnes IPES / FILIÈRE / VILLE / EFFECTIF.</li>
+        </ol>
+        <textarea class="csv-area" id="csv-area" readonly></textarea>
+        <div class="export-btns">
+          <button class="btn btn-primary" onclick="copyCSV()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            Copier CSV
+          </button>
+          <button class="btn btn-ghost" onclick="downloadCSV()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            Télécharger .csv
+          </button>
+          <a href="https://sheets.new" target="_blank" class="btn btn-ghost" style="text-decoration:none;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+            Ouvrir Sheets
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Data ─────────────────────────────────────────────────────────────
+const IPES_LIST = ["BIAST","BON BERGER","CHIMI","CNFZV FOUMBAN","DAUQ","EFSDC SANTA","ESCA","ESG","ESGIT","ESJEC","ESSIT","ETA BAFANG","GTES","HISTBA","ICAB","IESF","IKES","IME-BAF","IMK","INSSAS","INTIME","IPTF","IS BAFOUSSAM","ISA","ISAMET","ISAP","ISB","ISB-B","ISBI","ISBMPB","ISDMB","ISGEA","ISHEP","ISMTA","ISNG","ISPB","ISPBI","ISSAB","ISSAFO","ISSBMS-B","ISSMATA-BRTA","ISSTECOA","ISSTN","ISTA OMBESSA","ISTACO","ISTEC","ISTEDD","ISTSCOA","IUC","IUEC","IUES INSAM","IUH","IURB","IUT BDJN"];
+const FILIERES_LIST = ["ADMINISTRATION DES COLLECTIVITES TERRITORIALES","ANALYSES BIOLOGIQUES ET BIOCHIMIQUES","ASSISTANT MANAGER","BATIMENT","CHAUDRONNERIE ET SOUDURE","COMMUNICATION DES ORGANISATIONS","COMPTABILITE ET GESTION DES ENTREPRISES","CONSEIL AGROPASTORAL","CONSTRUCTION MECANIQUE","DOUANE ET TRANSIT","E-COMMERCE ET MARKETING NUMERIQUE","ELECTROTECHNIQUE","ENERGIES RENOUVELABLES","ENTREPRENEURIAT AGROPASTORAL","FABRICATION MECANIQUE","FROID ET CLIMATISATION","GENIE CULINAIRE","GENIE LOGICIEL","GEOMETRE TOPOGRAPHE","GESTION DES PROJETS","GESTION DES SYSTEMES D'INFORMATION","GESTION ET MANAGEMENT HOTELIER","HYGIENE SECURITE ENVIRONNEMENT","INDUSTRIE DE L'HABILLEMENT","INDUSTRIES ALIMENTAIRES","INFOGRAPHIE ET WEB DESIGN","INFORMATIQUE INDUSTRIELLE ET AUTOMATISME","INSTALLATION SANITAIRE","JOURNALISME","KINESITHERAPIE","MAINTENANCE DES APPAREILS BIOMEDICAUX","MAINTENANCE DES SYSTEMES ELECTRONIQUES","MAINTENANCE DES SYSTEMES INFORMATIQUES","MAINTENANCE ET APRES VENTE AUTOMOBILE","MAINTENANCE INDUSTRIELLE ET PRODUCTIQUE","MECATRONIQUE","MENUISERIE ET EBENISTERIE","ODONTOSTOMATOLOGIE","OPTICIEN-LUNETIER","PRODUCTION ANIMALE","PRODUCTION VEGETALE","PUERICULTURE ET GERONTOLOGIE","RADIOLOGIE ET IMAGERIE MEDICALE","RESEAUX ET SECURITE","SAGE-FEMME","SCIENCES INFIRMIERES","TECHNIQUES DE LABORATOIRE","TECHNIQUES PHARMACEUTIQUES","TELECOMMUNICATIONS","TRAVAUX PUBLICS","ASSURANCES","BANQUE ET FINANCE","GESTION DES RESSOURCES HUMAINES","GESTION FISCALE","GESTION LOGISTIQUE ET TRANSPORT","MARKETING-COMMERCE-VENTE"];
+const VILLES_LIST = ["Babadjou","Bafang","Bafoussam","Bandjoun","Bangangte","Bansoa","Bayangam","Dschang","Foumban","Foumbot","Ombessa","Santa"];
+
+// ── State ─────────────────────────────────────────────────────────────
+let cur = { ipes:'', filiere:'', ville:'', eff:'' };
+let entries = [];
+let currentStep = 1;
+
+// ── Autocomplete ──────────────────────────────────────────────────────
+function setupAC(inputId, ddId, list, key, nextBtnId) {
+  const inp = document.getElementById(inputId);
+  const dd  = document.getElementById(ddId);
+  const nextBtn = nextBtnId ? document.getElementById(nextBtnId) : null;
+  let highlighted = -1;
+
+  function normalize(s) { return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+
+  function render(q) {
+    const nq = normalize(q);
+    const matches = q.length === 0
+      ? list
+      : list.filter(v => normalize(v).includes(nq));
+
+    dd.innerHTML = '';
+    highlighted = -1;
+
+    if (matches.length === 0) {
+      dd.innerHTML = `<div class="ac-empty">Aucun résultat — vous pouvez saisir manuellement.</div>`;
+    } else {
+      matches.slice(0, 40).forEach((v, i) => {
+        const div = document.createElement('div');
+        div.className = 'ac-item';
+        const nv = normalize(v);
+        const idx = nv.indexOf(nq);
+        if (q && idx >= 0) {
+          div.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`
+            + v.substring(0, idx) + '<mark>' + v.substring(idx, idx+q.length) + '</mark>' + v.substring(idx+q.length);
+        } else {
+          div.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>` + v;
+        }
+        div.addEventListener('mousedown', e => { e.preventDefault(); selectVal(v, false); });
+        dd.appendChild(div);
+      });
+    }
+
+    // Manual option
+    if (q.length > 0 && !list.some(v => normalize(v) === nq)) {
+      const m = document.createElement('div');
+      m.className = 'ac-manual-option';
+      m.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Utiliser "<strong>${q}</strong>" (saisie manuelle)`;
+      m.addEventListener('mousedown', e => { e.preventDefault(); selectVal(q, true); });
+      dd.appendChild(m);
+    }
+
+    dd.classList.add('open');
+  }
+
+  function selectVal(v, isManual) {
+    cur[key] = v;
+    inp.value = v;
+    inp.classList.add('has-value');
+    if (isManual) inp.classList.add('manual');
+    else inp.classList.remove('manual');
+    dd.classList.remove('open');
+    renderTag(key, v, isManual);
+    if (nextBtn) nextBtn.disabled = false;
+  }
+
+  function renderTag(k, v, isManual) {
+    const wrap = document.getElementById('tag-' + k);
+    wrap.innerHTML = '';
+    const tag = document.createElement('div');
+    tag.className = 'selected-tag' + (isManual ? ' manual-tag' : '');
+    tag.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> ${v} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:.5"><path d="M18 6 6 18M6 6l12 12"/></svg>`;
+    tag.title = 'Cliquer pour modifier';
+    tag.addEventListener('click', () => {
+      cur[k] = '';
+      inp.value = '';
+      inp.classList.remove('has-value','manual');
+      wrap.innerHTML = '';
+      if (nextBtn) nextBtn.disabled = true;
+      inp.focus();
+    });
+    wrap.appendChild(tag);
+  }
+
+  inp.addEventListener('focus', () => { render(inp.value); });
+  inp.addEventListener('input', () => {
+    cur[key] = '';
+    inp.classList.remove('has-value','manual');
+    document.getElementById('tag-' + key).innerHTML = '';
+    if (nextBtn) nextBtn.disabled = true;
+    render(inp.value);
+  });
+  inp.addEventListener('blur', () => {
+    setTimeout(() => dd.classList.remove('open'), 150);
+  });
+  inp.addEventListener('keydown', e => {
+    const items = dd.querySelectorAll('.ac-item,.ac-manual-option');
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      highlighted = Math.min(highlighted + 1, items.length - 1);
+      items.forEach((el,i) => el.classList.toggle('highlighted', i === highlighted));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      highlighted = Math.max(highlighted - 1, -1);
+      items.forEach((el,i) => el.classList.toggle('highlighted', i === highlighted));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (highlighted >= 0 && items[highlighted]) {
+        items[highlighted].dispatchEvent(new MouseEvent('mousedown'));
+      } else if (inp.value.trim()) {
+        selectVal(inp.value.trim(), !list.some(v => normalize(v) === normalize(inp.value.trim())));
+      }
+    } else if (e.key === 'Escape') {
+      dd.classList.remove('open');
+    }
+  });
+}
+
+setupAC('inp-ipes',    'dd-ipes',    IPES_LIST,    'ipes',    'btn-next1');
+setupAC('inp-filiere', 'dd-filiere', FILIERES_LIST,'filiere', 'btn-next2');
+setupAC('inp-ville',   'dd-ville',   VILLES_LIST,  'ville',   'btn-next3');
+
+// ── Effectif ──────────────────────────────────────────────────────────
+function adjustEff(delta) {
+  const inp = document.getElementById('inp-eff');
+  const val = parseInt(inp.value) || 0;
+  inp.value = Math.max(0, val + delta);
+}
+
+// ── Steps ─────────────────────────────────────────────────────────────
+function goTo(n) {
+  document.getElementById('step' + currentStep).classList.remove('active');
+  currentStep = n;
+  document.getElementById('step' + n).classList.add('active');
+  updateProgress(n);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress(n) {
+  for (let i = 1; i <= 5; i++) {
+    const ps = document.getElementById('ps' + i);
+    ps.classList.remove('active','done');
+    if (i < n) ps.classList.add('done');
+    else if (i === n) ps.classList.add('active');
+  }
+  for (let i = 1; i <= 4; i++) {
+    const fill = document.getElementById('line' + i);
+    fill.style.width = (i < n) ? '100%' : '0%';
+  }
+}
+
+function goToReview() {
+  const eff = parseInt(document.getElementById('inp-eff').value);
+  if (!eff || eff < 0) {
+    showToast('⚠️ Veuillez saisir un effectif valide.');
+    return;
+  }
+  cur.eff = eff;
+
+  // Build summary
+  const grid = document.getElementById('summary-grid');
+  grid.innerHTML = `
+    <div class="summary-item">
+      <div class="s-label">IPES</div>
+      <div class="s-value">${cur.ipes}</div>
+    </div>
+    <div class="summary-item">
+      <div class="s-label">Filière</div>
+      <div class="s-value">${cur.filiere}</div>
+    </div>
+    <div class="summary-item">
+      <div class="s-label">Ville</div>
+      <div class="s-value">${cur.ville}</div>
+    </div>
+    <div class="summary-item effectif">
+      <div class="s-label">Effectif</div>
+      <div class="s-value">${cur.eff}</div>
+    </div>
+  `;
+  document.getElementById('recap-hint').textContent =
+    'Vérifiez les informations ci-dessous avant d\'enregistrer.';
+
+  goTo(5);
+}
+
+function saveEntry() {
+  entries.push({ ...cur });
+  renderEntries();
+  showToast('✅ Entrée enregistrée !');
+  document.getElementById('entries-section').style.display = 'block';
+  document.getElementById('export-panel').style.display = entries.length > 0 ? 'block' : 'none';
+  updateCSV();
+  newEntry();
+}
+
+function newEntry() {
+  cur = { ipes:'', filiere:'', ville:'', eff:'' };
+  ['ipes','filiere','ville'].forEach(k => {
+    const inp = document.getElementById('inp-' + k);
+    inp.value = '';
+    inp.classList.remove('has-value','manual');
+    document.getElementById('tag-' + k).innerHTML = '';
+  });
+  ['btn-next1','btn-next2','btn-next3'].forEach(id => {
+    document.getElementById(id).disabled = true;
+  });
+  document.getElementById('inp-eff').value = '';
+  goTo(1);
+}
+
+function deleteEntry(i) {
+  entries.splice(i, 1);
+  renderEntries();
+  updateCSV();
+  if (entries.length === 0) {
+    document.getElementById('export-panel').style.display = 'none';
+  }
+}
+
+function renderEntries() {
+  const list = document.getElementById('responses-list');
+  const count = document.getElementById('entries-count');
+  const total = entries.reduce((s, e) => s + (parseInt(e.eff) || 0), 0);
+  count.textContent = `${entries.length} entrée(s) · Total effectifs : ${total}`;
+
+  if (entries.length === 0) {
+    list.innerHTML = `<div class="empty-state">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <p>Aucune entrée encore.</p>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = entries.map((e, i) => `
+    <div class="response-card">
+      <div>
+        <div class="rc-label">IPES</div>
+        <div class="rc-val">${e.ipes}</div>
+      </div>
+      <div>
+        <div class="rc-label">Filière</div>
+        <div class="rc-val">${e.filiere}</div>
+      </div>
+      <div>
+        <div class="rc-label">Ville</div>
+        <div class="rc-val">${e.ville}</div>
+      </div>
+      <div class="rc-eff">${e.eff}</div>
+      <button class="btn-del" onclick="deleteEntry(${i})" title="Supprimer">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+  `).join('');
+}
+
+// ── CSV ────────────────────────────────────────────────────────────────
+function buildCSV() {
+  const header = 'IPES,FILIERE,VILLE,EFFECTIF';
+  const rows = entries.map(e =>
+    [e.ipes, e.filiere, e.ville, e.eff]
+      .map(v => `"${String(v).replace(/"/g,'""')}"`)
+      .join(',')
+  );
+  return [header, ...rows].join('\n');
+}
+function updateCSV() {
+  document.getElementById('csv-area').value = buildCSV();
+}
+function copyCSV() {
+  navigator.clipboard.writeText(buildCSV()).then(() => showToast('📋 CSV copié dans le presse-papier !'));
+}
+function downloadCSV() {
+  const blob = new Blob([buildCSV()], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'effectifs_ipes.csv';
+  a.click();
+}
+
+// ── Toast ──────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
