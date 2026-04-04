@@ -1,2 +1,2 @@
 # questionnaire-effectifs
-page destinée aux IPES sous la coiuverture de l'IUT-FV pour l'examen BTS 2026
+page destinée aux IPES pour la préparation de la pratique de l'examen national du BTS 2026 dans le centre de Bandjoun
