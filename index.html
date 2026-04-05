@@ -359,11 +359,26 @@ code{background:var(--cream);border-radius:3px;padding:1px 5px;font-size:11px;fo
 
       <!-- ONGLET CODES -->
       <div id="tab-codes" style="display:block;">
-        <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px;line-height:1.5;">Ces codes sont générés automatiquement à la première saisie de chaque IPES. Ils ne changent jamais. Transmettez-les aux responsables concernés.</p>
-        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-          <button class="btn btn-ghost" onclick="copyAllCodes()" style="font-size:12px;padding:7px 14px;">
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.5;">
+          Générez les codes à l'avance et transmettez-les aux responsables des IPES. Un code attribué ne change jamais.
+        </p>
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+          <input type="text" id="code-search" placeholder="Rechercher un IPES…"
+            oninput="renderCodesTable()"
+            style="flex:1;min-width:180px;font-family:'DM Sans',sans-serif;font-size:13px;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;outline:none;transition:border-color .2s;background:var(--paper);"
+            onfocus="this.style.borderColor='var(--accent)'"
+            onblur="this.style.borderColor='var(--border)'">
+          <button class="btn btn-primary" onclick="generateAllCodes()" style="font-size:12px;padding:8px 16px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            Générer tous les codes
+          </button>
+          <button class="btn btn-ghost" onclick="copyAllCodes()" style="font-size:12px;padding:8px 16px;">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
             Copier tous les codes
+          </button>
+          <button class="btn btn-ghost" onclick="downloadCodesPDF()" style="font-size:12px;padding:8px 16px;color:var(--danger);border-color:#e8d5d5;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            Imprimer / PDF
           </button>
         </div>
         <div id="codes-table-wrap"></div>
@@ -815,31 +830,13 @@ function renderAdminContent(){
 
   // Stats
   document.getElementById('admin-stats').innerHTML=[
-    ['IPES',all.length],['Lignes',totalLines],['Étudiants',totalEff],['Codes attribués',totalCodes]
-  ].map(([label,val])=>`<div style="background:var(--paper);border:1px solid var(--border);border-radius:8px;padding:10px 16px;min-width:100px;">
+    ['IPES soumis',all.length],['Lignes',totalLines],['Étudiants',totalEff],['Codes générés',totalCodes]
+  ].map(([label,val])=>`<div style="background:var(--paper);border:1px solid var(--border);border-radius:8px;padding:10px 16px;min-width:110px;">
     <div style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);">${label}</div>
     <div style="font-family:'Instrument Serif',serif;font-size:24px;color:var(--accent);">${val}</div>
   </div>`).join('');
 
-  // Tableau des codes
-  const codesWrap=document.getElementById('codes-table-wrap');
-  if(!Object.keys(codes).length){
-    codesWrap.innerHTML=`<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;border:1.5px dashed var(--border);border-radius:10px;">Aucun code attribué pour l'instant. Les codes sont créés automatiquement lors de la première soumission de chaque IPES.</div>`;
-  } else {
-    codesWrap.innerHTML=`<table class="codes-table">
-      <thead><tr><th>IPES</th><th>Code</th><th>Premières saisies</th><th></th></tr></thead>
-      <tbody>${Object.entries(codes).map(([ipes,code])=>{
-        const count=all.filter(e=>e.ipes===ipes).length;
-        return `<tr>
-          <td style="font-weight:500">${ipes}</td>
-          <td><span class="code-pill">${code}</span></td>
-          <td style="color:var(--muted);font-size:12px">${count} soumission${count!==1?'s':''}</td>
-          <td><button class="copy-code-btn" onclick="navigator.clipboard.writeText('${code}').then(()=>showToast('📋 Code ${ipes} copié !'))">Copier</button></td>
-        </tr>`;
-      }).join('')}
-      </tbody>
-    </table>`;
-  }
+  renderCodesTable();
 
   // Tableau des données
   const adminList=document.getElementById('admin-entries-list');
@@ -867,6 +864,122 @@ function renderAdminContent(){
   }
 
   updateCSV();
+}
+
+// Génère les codes pour tous les IPES de la liste qui n'en ont pas encore
+function generateAllCodes(){
+  const codes=loadCodes();
+  let count=0;
+  IPES_LIST.forEach(ipes=>{
+    if(!codes[ipes]){ codes[ipes]=generateCode(); count++; }
+  });
+  saveCodes(codes);
+  renderCodesTable();
+  // Mettre à jour stats
+  document.querySelector('#admin-stats div:last-child div:last-child').textContent=Object.keys(codes).length;
+  showToast(`✅ ${count} code${count!==1?'s':''} généré${count!==1?'s':''} !`);
+}
+
+// Génère le code d'un seul IPES
+function generateOneCode(ipes){
+  const codes=loadCodes();
+  if(!codes[ipes]){ codes[ipes]=generateCode(); saveCodes(codes); }
+  renderCodesTable();
+  showToast(`✅ Code généré pour ${ipes} : ${codes[ipes]}`);
+}
+
+// Régénère (force) le code d'un IPES (réservé admin)
+function regenCode(ipes){
+  if(!confirm(`Régénérer le code de ${ipes} ? L'ancien code ne fonctionnera plus.`)) return;
+  const codes=loadCodes();
+  codes[ipes]=generateCode();
+  saveCodes(codes);
+  renderCodesTable();
+  showToast(`🔄 Nouveau code pour ${ipes} : ${codes[ipes]}`);
+}
+
+// Affiche le tableau des codes avec filtre de recherche
+function renderCodesTable(){
+  const codes=loadCodes();
+  const all=loadEntries();
+  const q=norm((document.getElementById('code-search')||{}).value||'');
+  const wrap=document.getElementById('codes-table-wrap');
+  if(!wrap) return;
+
+  // Tous les IPES de la liste + ceux qui ont un code mais ne sont pas dans la liste
+  const allIpes=[...new Set([...IPES_LIST, ...Object.keys(codes)])];
+  const filtered=q ? allIpes.filter(v=>norm(v).includes(q)) : allIpes;
+
+  const withCode=filtered.filter(v=>codes[v]);
+  const withoutCode=filtered.filter(v=>!codes[v]);
+
+  let html='';
+
+  if(withCode.length){
+    html+=`<div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;margin-top:4px;">
+      Codes attribués (${withCode.length})
+    </div>
+    <table class="codes-table" style="margin-bottom:20px;">
+      <thead><tr><th>IPES</th><th>Code</th><th>Soumissions</th><th style="width:160px">Actions</th></tr></thead>
+      <tbody>${withCode.map(ipes=>{
+        const code=codes[ipes];
+        const count=all.filter(e=>norm(e.ipes)===norm(ipes)).length;
+        return `<tr>
+          <td style="font-weight:500">${ipes}</td>
+          <td><span class="code-pill">${code}</span></td>
+          <td style="color:var(--muted);font-size:12px">${count} soumission${count!==1?'s':''}</td>
+          <td style="display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;">
+            <button class="copy-code-btn" onclick="navigator.clipboard.writeText('${code}').then(()=>showToast('📋 Code ${ipes} copié !'))">Copier</button>
+            <button class="copy-code-btn" style="color:var(--danger);border-color:#e8d5d5;" onclick="regenCode('${ipes.replace(/'/g,"\\'")}')">Régénérer</button>
+          </td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
+  }
+
+  if(withoutCode.length){
+    html+=`<div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">
+      Sans code (${withoutCode.length}) — cliquez pour générer
+    </div>
+    <table class="codes-table">
+      <thead><tr><th>IPES</th><th>Code</th><th></th></tr></thead>
+      <tbody>${withoutCode.map(ipes=>`<tr>
+        <td style="font-weight:500;color:var(--muted)">${ipes}</td>
+        <td><span style="font-size:12px;color:var(--muted);font-style:italic">Non généré</span></td>
+        <td><button class="copy-code-btn" style="color:var(--success);border-color:#a0d4b8;" onclick="generateOneCode('${ipes.replace(/'/g,"\\'")}')">
+          + Générer
+        </button></td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  }
+
+  if(!filtered.length){
+    html=`<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">Aucun IPES trouvé pour "${q}".</div>`;
+  }
+
+  wrap.innerHTML=html;
+}
+
+// Imprimer / exporter PDF
+function downloadCodesPDF(){
+  const codes=loadCodes();
+  if(!Object.keys(codes).length){ showToast('Aucun code à imprimer.'); return; }
+  const rows=Object.entries(codes).map(([ipes,code])=>
+    `<tr><td style="padding:8px 12px;border-bottom:1px solid #eee;font-weight:500">${ipes}</td>
+     <td style="padding:8px 12px;border-bottom:1px solid #eee;font-family:monospace;font-size:16px;font-weight:700;letter-spacing:.15em;color:#1a56a0">${code}</td></tr>`
+  ).join('');
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Codes IPES</title>
+  <style>body{font-family:Arial,sans-serif;padding:30px;color:#0f1923}h2{margin-bottom:6px}p{color:#7a7268;font-size:13px;margin-bottom:20px}
+  table{width:100%;border-collapse:collapse}th{background:#0f1923;color:#fff;padding:9px 12px;text-align:left;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+  tr:nth-child(even) td{background:#f7f5f0}@media print{.no-print{display:none}}</style></head>
+  <body>
+  <h2>Codes d'accès IPES — Saisie des Effectifs</h2>
+  <p>Généré le ${new Date().toLocaleDateString('fr-FR')} — Ces codes sont confidentiels. Transmettez-les uniquement aux responsables concernés.</p>
+  <button class="no-print" onclick="window.print()" style="margin-bottom:16px;padding:8px 16px;cursor:pointer;background:#1a56a0;color:#fff;border:none;border-radius:6px;font-size:13px;">🖨️ Imprimer</button>
+  <table><thead><tr><th>IPES</th><th>Code d'accès</th></tr></thead><tbody>${rows}</tbody></table>
+  </body></html>`);
+  win.document.close();
 }
 
 function deleteGroup(gi){
