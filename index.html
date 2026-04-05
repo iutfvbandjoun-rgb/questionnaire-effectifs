@@ -391,6 +391,14 @@ code{background:var(--cream);border-radius:3px;padding:1px 5px;font-size:11px;fo
 
       <!-- ONGLET EXPORT -->
       <div id="tab-export" style="display:none;">
+        <div style="background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:16px;">
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px;">🔌 Tester la connexion Google Sheets</div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5;">Cliquez pour envoyer une ligne de test dans votre Google Sheet et vérifier que la connexion fonctionne.</p>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <button id="test-sheets-btn" class="btn btn-primary" onclick="testSheetsConnection()" style="font-size:12px;padding:8px 16px;">Tester la connexion Sheets</button>
+            <span id="test-sheets-result" style="font-size:12.5px;"></span>
+          </div>
+        </div>
         <ol class="export-steps">
           <li>Cliquez sur <strong>"Copier CSV"</strong> ci-dessous.</li>
           <li>Ouvrez <a href="https://sheets.new" target="_blank" style="color:var(--accent)">sheets.new</a>.</li>
@@ -461,10 +469,16 @@ function getOrCreateCode(ipes){
   return codes[ipes];
 }
 
-// Vérifie si un IPES a déjà des entrées dans la base
-function ipesIsKnown(ipes){
+// IPES connu = a un code pré-généré par l'admin OU a déjà soumis des données
+// Dans les deux cas on demande le code pour les soumissions ultérieures
+function ipesIsKnown(ipes) {
+  const n = ipes.trim().toLowerCase();
+  // 1. A-t-il déjà soumis des données ?
   const entries = loadEntries();
-  return entries.some(e => e.ipes.trim().toLowerCase() === ipes.trim().toLowerCase());
+  if (entries.some(e => e.ipes.trim().toLowerCase() === n)) return true;
+  // 2. L'admin lui a-t-il pré-généré un code ?
+  const codes = loadCodes();
+  return Object.keys(codes).some(k => k.trim().toLowerCase() === n);
 }
 
 // ═══════════════════════════════════════════════════════
@@ -558,11 +572,27 @@ const ICO_BOOK = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" st
   });
 })();
 
-function verifyCode(){
+async function verifyCode(){
   const inp = document.getElementById('inp-code');
-  const codes = loadCodes();
-  const expected = codes[cur.ipes];
-  if(expected && inp.value.trim().toUpperCase() === expected){
+  const entered = inp.value.trim().toUpperCase();
+  if (!entered) return;
+
+  const btn = document.querySelector('#code-box .btn-primary');
+  if(btn){ btn.disabled=true; btn.textContent='Vérification…'; }
+
+  // 1. Vérification en ligne (Sheets) — source de vérité
+  let valid = await checkCodeOnline(cur.ipes, entered);
+
+  // 2. Fallback sur localStorage si hors ligne
+  if (valid === null) {
+    const codes = loadCodes();
+    const expected = codes[cur.ipes] || Object.entries(codes).find(([k])=>k.trim().toLowerCase()===cur.ipes.trim().toLowerCase())?.[1];
+    valid = expected ? (entered === expected) : false;
+  }
+
+  if(btn){ btn.disabled=false; btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Valider le code'; }
+
+  if(valid){
     document.getElementById('code-error').style.display='none';
     document.getElementById('code-box').classList.remove('error-state');
     document.getElementById('btn-next1').disabled=false;
@@ -759,7 +789,7 @@ async function saveAll(){
   const entry={ipes:cur.ipes,lines:[...pendingLines],date:new Date().toISOString()};
   const all=loadEntries(); all.push(entry); saveEntries(all);
 
-  // Envoi vers Google Sheets via image pixel (seule méthode sans CORS garantie)
+  // Envoi vers Google Sheets
   if(SCRIPT_URL && SCRIPT_URL.trim() !== ''){
     showSendingIndicator(true);
     try{
@@ -767,26 +797,110 @@ async function saveAll(){
         ipes: cur.ipes, filiere: l.filiere,
         ville: l.ville, effectif: l.effectif
       }));
-      const url = SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify({rows}));
-      await new Promise((resolve) => {
-        const img = new Image();
-        img.onload = img.onerror = () => resolve();
-        setTimeout(resolve, 5000); // timeout 5s
-        img.src = url;
-      });
+      await sendToSheets('addRows', { rows });
       showToast('✅ Données envoyées vers Google Sheets !');
     }catch(err){
-      console.error(err);
+      console.error('Sheets error:', err);
       showToast('⚠️ Envoi échoué — données sauvées localement.');
     }finally{showSendingIndicator(false);}
   } else {
-    showToast('✅ Entrée enregistrée !');
+    showToast('✅ Entrée enregistrée localement.');
   }
 
   renderUserEntries(); newEntry();
 }
 
-function renderUserEntries(){
+// ═══════════════════════════════════════════════════════
+// ENVOI GOOGLE SHEETS — formulaire HTML invisible
+// Fonctionne sur GitHub Pages sans problème CORS
+// ═══════════════════════════════════════════════════════
+function sendToSheets(action, payload) {
+  return new Promise((resolve) => {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = SCRIPT_URL;
+    form.target = '_sheets_target_';
+    form.style.display = 'none';
+
+    const addField = (name, value) => {
+      const inp = document.createElement('input');
+      inp.type = 'hidden';
+      inp.name = name;
+      inp.value = value;
+      form.appendChild(inp);
+    };
+
+    addField('action', action);
+    addField('data', JSON.stringify(payload));
+
+    // iframe cible invisible
+    let iframe = document.getElementById('_sheets_iframe_');
+    if (!iframe) {
+      iframe = document.createElement('iframe');
+      iframe.name = '_sheets_target_';
+      iframe.id   = '_sheets_iframe_';
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+    }
+
+    iframe.onload = () => resolve('ok');
+    setTimeout(() => resolve('timeout'), 10000);
+
+    document.body.appendChild(form);
+    form.submit();
+    setTimeout(() => { try { document.body.removeChild(form); } catch{} }, 500);
+  });
+}
+
+async function testSheetsConnection() {
+  const btn    = document.getElementById('test-sheets-btn');
+  const result = document.getElementById('test-sheets-result');
+  if (!SCRIPT_URL || !SCRIPT_URL.trim()) {
+    result.innerHTML = '❌ <strong>SCRIPT_URL vide</strong> — configurez l\'URL dans le fichier HTML.';
+    result.style.color = 'var(--danger)'; return;
+  }
+  btn.disabled = true; btn.textContent = 'Test en cours…';
+  result.textContent = 'Envoi en cours…';
+  result.style.color = 'var(--muted)';
+  const r = await sendToSheets('test', { message: 'TEST connexion', date: new Date().toISOString() });
+  btn.disabled = false; btn.textContent = 'Tester la connexion Sheets';
+  if (r === 'ok' || r === 'timeout') {
+    result.innerHTML = '✅ <strong>Requête envoyée.</strong> Vérifiez que la ligne TEST est apparue dans votre Google Sheet (onglet <em>Effectifs</em>). Si oui, la connexion fonctionne.';
+    result.style.color = 'var(--success)';
+  } else {
+    result.innerHTML = '❌ Échec — vérifiez l\'URL du script et le déploiement.';
+    result.style.color = 'var(--danger)';
+  }
+}
+
+// Vérifier un code IPES en ligne (depuis Google Sheets)
+async function checkCodeOnline(ipes, codeEntered) {
+  if (!SCRIPT_URL || !SCRIPT_URL.trim()) return null; // fallback local
+  try {
+    const url = SCRIPT_URL + '?action=checkCode&ipes=' + encodeURIComponent(ipes) + '&code=' + encodeURIComponent(codeEntered.trim().toUpperCase());
+    const resp = await fetch(url);
+    const json = await resp.json();
+    return json.valid === true;
+  } catch(e) {
+    return null; // si erreur réseau, fallback sur local
+  }
+}
+
+// Charger les codes depuis Sheets au démarrage (cache local)
+async function syncCodesFromSheets() {
+  if (!SCRIPT_URL || !SCRIPT_URL.trim()) return;
+  try {
+    const url = SCRIPT_URL + '?action=getCodes';
+    const resp = await fetch(url);
+    const json = await resp.json();
+    if (json.codes) {
+      saveCodes(json.codes);
+      console.log('Codes synchronisés depuis Sheets :', Object.keys(json.codes).length);
+    }
+  } catch(e) {
+    console.log('Sync codes échoué, utilisation du cache local');
+  }
+}
   const all=loadEntries();
   const meta=document.getElementById('entries-meta');
   const list=document.getElementById('entries-list');
@@ -1113,6 +1227,7 @@ function showToast(msg){
 
 // Init
 renderUserEntries();
+syncCodesFromSheets(); // Synchronise les codes depuis Sheets au démarrage
 </script>
 </body>
 </html>
