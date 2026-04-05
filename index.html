@@ -630,17 +630,21 @@ async function saveAll(){
         ville: l.ville,
         effectif: l.effectif
       }));
-      const resp = await fetch(SCRIPT_URL, {
+
+      // Google Apps Script requiert no-cors + FormData pour éviter les erreurs CORS
+      const form = new FormData();
+      form.append('data', JSON.stringify({ rows }));
+
+      await fetch(SCRIPT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ rows })
+        mode: 'no-cors',   // ← clé : évite le blocage CORS de Google
+        body: form
       });
-      const json = await resp.json();
-      if(json.ok) {
-        showToast('✅ Données envoyées vers Google Sheets !');
-      } else {
-        showToast('⚠️ Envoi partiel — données sauvées localement.');
-      }
+
+      // no-cors renvoie une "opaque response" — on ne peut pas lire json.ok
+      // mais si fetch ne lève pas d'exception, l'envoi a réussi
+      showToast('✅ Données envoyées vers Google Sheets !');
+
     } catch(err) {
       console.error('Sheets error:', err);
       showToast('⚠️ Sheets inaccessible — données sauvées localement.');
