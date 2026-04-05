@@ -681,26 +681,38 @@ async function saveAll(){
   newEntry();
 }
 
-// ─── ENVOI SHEETS — formulaire POST invisible ──────────────────────────────
+// ─── ENVOI SHEETS — JSONP (confirme la réception côté Apps Script) ─────────
 function postToSheets(action, payload){
   return new Promise(resolve=>{
-    try{
-      // Créer iframe cible
-      const iid='_sf_'+Date.now();
-      const iframe=document.createElement('iframe');
-      iframe.name=iid; iframe.style.display='none';
-      iframe.onload=()=>{ resolve(true); };
-      setTimeout(()=>resolve(true),8000);
-      document.body.appendChild(iframe);
-      // Créer formulaire
-      const form=document.createElement('form');
-      form.method='POST'; form.action=SCRIPT_URL; form.target=iid; form.style.display='none';
-      const fa=(n,v)=>{const i=document.createElement('input');i.type='hidden';i.name=n;i.value=v;form.appendChild(i);};
-      fa('action',action); fa('data',JSON.stringify(payload));
-      document.body.appendChild(form);
-      form.submit();
-      setTimeout(()=>{try{document.body.removeChild(form);document.body.removeChild(iframe);}catch{}},10000);
-    }catch(e){ resolve(false); }
+    const cbName = '_gs_cb_' + Date.now();
+    const script = document.createElement('script');
+    let done = false;
+
+    // Callback appelé par Apps Script
+    window[cbName] = function(resp){
+      done = true;
+      delete window[cbName];
+      try{ document.head.removeChild(script); }catch{}
+      resolve(resp && resp.ok ? true : false);
+    };
+
+    // Timeout 10s
+    setTimeout(()=>{
+      if(!done){
+        delete window[cbName];
+        try{ document.head.removeChild(script); }catch{}
+        resolve(false);
+      }
+    }, 10000);
+
+    const url = SCRIPT_URL
+      + '?action='   + encodeURIComponent(action)
+      + '&data='     + encodeURIComponent(JSON.stringify(payload))
+      + '&callback=' + cbName;
+
+    script.src = url;
+    script.onerror = ()=>{ delete window[cbName]; resolve(false); };
+    document.head.appendChild(script);
   });
 }
 
