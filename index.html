@@ -6,211 +6,200 @@
 <title>Saisie des Effectifs – IPES</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --ink:#0f1923; --paper:#f7f5f0; --cream:#ede9e0;
-  --accent:#1a56a0; --accent-light:#e8f0fb;
-  --gold:#c4902a; --success:#1a7a4a; --danger:#c0392b;
-  --border:#d4cfc5; --muted:#7a7268; --card:#ffffff;
+:root{
+  --ink:#0f1923;--paper:#f7f5f0;--cream:#ede9e0;
+  --accent:#1a56a0;--accent-light:#e8f0fb;
+  --gold:#c4902a;--success:#1a7a4a;--danger:#c0392b;
+  --border:#d4cfc5;--muted:#7a7268;--card:#ffffff;
   --shadow:0 2px 12px rgba(15,25,35,.08);
   --shadow-lg:0 8px 32px rgba(15,25,35,.13);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
 
-/* Header */
 header{background:var(--ink);color:#fff;padding:28px 0 0}
 header::after{content:'';display:block;height:6px;background:linear-gradient(90deg,var(--gold),var(--accent))}
-.header-inner{max-width:860px;margin:0 auto;padding:0 24px 24px}
-.header-badge{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);border-radius:2px;padding:3px 10px;margin-bottom:14px}
+.hi{max-width:860px;margin:0 auto;padding:0 24px 24px}
+.badge{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);border-radius:2px;padding:3px 10px;margin-bottom:14px}
 header h1{font-family:'Instrument Serif',serif;font-size:clamp(20px,3.5vw,30px);font-weight:400;color:#fff}
 header h1 em{font-style:italic;color:#b8cfe8}
-header p.subtitle{margin-top:6px;font-size:13px;color:#8fa8c2;font-weight:300}
+header p.sub{margin-top:6px;font-size:13px;color:#8fa8c2;font-weight:300}
 
 main{max-width:860px;margin:0 auto;padding:28px 24px 40px}
 
-/* Progress */
-.prog-bar{display:flex;gap:6px;align-items:center;margin-bottom:28px}
-.prog-step{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--muted);white-space:nowrap}
-.prog-step .dot{width:26px;height:26px;border-radius:50%;background:var(--cream);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;transition:all .3s}
-.prog-step.active .dot{background:var(--accent);border-color:var(--accent);color:#fff}
-.prog-step.done .dot{background:var(--success);border-color:var(--success);color:#fff}
-.prog-step.active{color:var(--accent)}
-.prog-step.done{color:var(--success)}
-.prog-line{flex:1;height:2px;background:var(--border);border-radius:1px;overflow:hidden;min-width:10px}
-.prog-line .fill{height:100%;background:var(--success);transition:width .4s ease;width:0%}
+.prog{display:flex;gap:6px;align-items:center;margin-bottom:28px}
+.ps{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--muted);white-space:nowrap}
+.ps .d{width:26px;height:26px;border-radius:50%;background:var(--cream);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;transition:all .3s}
+.ps.active .d{background:var(--accent);border-color:var(--accent);color:#fff}
+.ps.done .d{background:var(--success);border-color:var(--success);color:#fff}
+.ps.active{color:var(--accent)}.ps.done{color:var(--success)}
+.pl{flex:1;height:2px;background:var(--border);border-radius:1px;overflow:hidden;min-width:10px}
+.pl .f{height:100%;background:var(--success);transition:width .4s;width:0%}
 
-/* Steps */
 .step{display:none}
-.step.active{display:block;animation:fadeUp .3s ease}
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.step.active{display:block;animation:up .3s ease}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
-/* Card */
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px 28px 24px;box-shadow:var(--shadow)}
-.step-label{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
-.step-title{font-family:'Instrument Serif',serif;font-size:21px;font-weight:400;margin-bottom:4px}
-.step-hint{font-size:12.5px;color:var(--muted);margin-bottom:22px;line-height:1.5}
+.slabel{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.stitle{font-family:'Instrument Serif',serif;font-size:21px;font-weight:400;margin-bottom:4px}
+.shint{font-size:12.5px;color:var(--muted);margin-bottom:22px;line-height:1.5}
 
-/* Autocomplete */
-.field-wrap{position:relative;margin-bottom:8px}
-.ac-input{width:100%;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--ink);background:var(--paper);border:2px solid var(--border);border-radius:8px;padding:12px 44px 12px 14px;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
-.ac-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,160,.10);background:#fff}
-.ac-input.has-value{border-color:var(--success);background:#fff}
-.ac-input.manual-v{border-color:var(--gold)}
-.ac-icon{position:absolute;right:13px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted);transition:color .2s}
-.ac-input:focus~.ac-icon{color:var(--accent)}
-.ac-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid var(--accent);border-radius:8px;box-shadow:var(--shadow-lg);max-height:220px;overflow-y:auto;z-index:200;display:none}
-.ac-dropdown.open{display:block;animation:fadeDown .15s ease}
-@keyframes fadeDown{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
-.ac-item{padding:9px 14px;font-size:13.5px;cursor:pointer;transition:background .1s;display:flex;align-items:center;gap:9px}
-.ac-item:hover,.ac-item.hl{background:var(--accent-light);color:var(--accent)}
-.ac-item mark{background:none;color:var(--accent);font-weight:700}
-.ac-manual{padding:9px 14px;font-size:13px;cursor:pointer;color:var(--gold);border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;font-weight:500}
-.ac-manual:hover{background:#fffaf0}
-.ac-dropdown::-webkit-scrollbar{width:5px}
-.ac-dropdown::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.fw{position:relative;margin-bottom:8px}
+.aci{width:100%;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--ink);background:var(--paper);border:2px solid var(--border);border-radius:8px;padding:12px 44px 12px 14px;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
+.aci:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,160,.1);background:#fff}
+.aci.ok{border-color:var(--success);background:#fff}
+.aci.manual{border-color:var(--gold)}
+.aico{position:absolute;right:13px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted)}
+.aci:focus~.aico{color:var(--accent)}.aci.ok~.aico{color:var(--success)}
+.add{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid var(--accent);border-radius:8px;box-shadow:var(--shadow-lg);max-height:220px;overflow-y:auto;z-index:200;display:none}
+.add.open{display:block;animation:fd .15s ease}
+@keyframes fd{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+.ai{padding:9px 14px;font-size:13.5px;cursor:pointer;transition:background .1s;display:flex;align-items:center;gap:9px}
+.ai:hover,.ai.hl{background:var(--accent-light);color:var(--accent)}
+.ai mark{background:none;color:var(--accent);font-weight:700}
+.am{padding:9px 14px;font-size:13px;cursor:pointer;color:var(--gold);border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;font-weight:500}
+.am:hover{background:#fffaf0}
+.add::-webkit-scrollbar{width:5px}.add::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 
-/* Tags */
-.tags-wrap{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;min-height:4px}
-.tag-pill{display:inline-flex;align-items:center;gap:6px;background:var(--accent-light);border:1.5px solid var(--accent);color:var(--accent);border-radius:20px;padding:5px 12px;font-size:12.5px;font-weight:500}
-.tag-pill.manual-v{background:#fffaf0;border-color:var(--gold);color:#7a5800}
-.tag-pill .remove-btn{background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;color:inherit;opacity:.55}
-.tag-pill .remove-btn:hover{opacity:1}
+.tagw{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;min-height:4px}
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--accent-light);border:1.5px solid var(--accent);color:var(--accent);border-radius:20px;padding:5px 12px;font-size:12.5px;font-weight:500}
+.tag.manual{background:#fffaf0;border-color:var(--gold);color:#7a5800}
+.tag .rb{background:none;border:none;cursor:pointer;padding:0;display:flex;align-items:center;color:inherit;opacity:.55}
+.tag .rb:hover{opacity:1}
 
-/* Buttons */
-.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
+.navr{display:flex;justify-content:space-between;align-items:center;margin-top:24px}
 .btn{font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:600;border:none;border-radius:8px;padding:11px 22px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:7px}
-.btn-ghost{background:transparent;color:var(--muted);border:2px solid var(--border)}
-.btn-ghost:hover{border-color:var(--ink);color:var(--ink)}
-.btn-primary{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(26,86,160,.2)}
-.btn-primary:hover{background:#154a8a}
-.btn-primary:disabled{background:var(--border);color:var(--muted);box-shadow:none;cursor:not-allowed}
-.btn-success{background:var(--success);color:#fff}
-.btn-success:hover{background:#155e38}
-.btn-danger{background:var(--danger);color:#fff}
+.bg{background:transparent;color:var(--muted);border:2px solid var(--border)}
+.bg:hover{border-color:var(--ink);color:var(--ink)}
+.bp{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(26,86,160,.2)}
+.bp:hover{background:#154a8a}
+.bp:disabled{background:var(--border);color:var(--muted);box-shadow:none;cursor:not-allowed}
+.bs{background:var(--success);color:#fff}
+.bs:hover{background:#155e38}
 
-/* Code IPES verification */
-.code-box{background:var(--paper);border:2px solid var(--border);border-radius:10px;padding:20px;margin-top:4px}
-.code-box.error-state{border-color:var(--danger);animation:shake .3s ease}
+/* Code zone */
+.codebox{background:var(--paper);border:2px solid var(--border);border-radius:10px;padding:20px;margin-top:16px}
+.codebox.err{animation:shake .3s ease;border-color:var(--danger)}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.code-input{width:100%;font-family:'Instrument Serif',serif;font-size:28px;letter-spacing:.2em;text-align:center;background:#fff;border:2px solid var(--border);border-radius:8px;padding:14px;outline:none;transition:border-color .2s;color:var(--ink)}
-.code-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,160,.10)}
-.code-badge{display:inline-flex;align-items:center;gap:6px;background:var(--cream);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:12px;color:var(--muted);margin-bottom:14px}
-.code-badge strong{color:var(--ink)}
+.codeinp{width:100%;font-family:'Instrument Serif',serif;font-size:28px;letter-spacing:.2em;text-align:center;background:#fff;border:2px solid var(--border);border-radius:8px;padding:14px;outline:none;transition:border-color .2s;color:var(--ink)}
+.codeinp:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,160,.1)}
+
+/* Filières tags */
+.ftags{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
 
 /* Effectifs */
-.eff-ipes-badge{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:#fff;border-radius:6px;padding:7px 14px;font-size:13px;font-weight:600;margin-bottom:20px}
-.eff-filiere-block{background:var(--paper);border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden}
-.eff-filiere-header{background:var(--cream);padding:11px 16px;font-size:13px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
-.eff-ville-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-top:1px solid var(--border)}
-.eff-ville-name{font-size:13px;color:var(--ink);font-weight:500;flex:1}
-.eff-controls{display:flex;align-items:center;gap:6px}
-.eff-btn{width:30px;height:30px;border-radius:6px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;line-height:1;color:var(--ink);transition:all .15s;flex-shrink:0}
-.eff-btn:hover{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
-.eff-num{width:66px;text-align:center;font-family:'Instrument Serif',serif;font-size:21px;background:none;border:none;outline:none;color:var(--ink)}
+.effbadge{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:#fff;border-radius:6px;padding:7px 14px;font-size:13px;font-weight:600;margin-bottom:20px}
+.effblock{background:var(--paper);border:1px solid var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden}
+.effhdr{background:var(--cream);padding:11px 16px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.effrow{display:flex;align-items:center;justify-content:center;padding:14px 16px;gap:8px}
+.effbtn{width:34px;height:34px;border-radius:6px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:var(--ink);transition:all .15s;flex-shrink:0}
+.effbtn:hover{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
+.effnum{width:80px;text-align:center;font-family:'Instrument Serif',serif;font-size:30px;background:none;border:none;outline:none;color:var(--ink)}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 
-/* Summary */
-.summary-ipes-title{font-family:'Instrument Serif',serif;font-size:19px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.summary-table{width:100%;border-collapse:collapse;font-size:13px}
-.summary-table th{background:var(--ink);color:#fff;padding:9px 12px;text-align:left;font-weight:500;font-size:11px;letter-spacing:.07em;text-transform:uppercase}
-.summary-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
-.summary-table tr:last-child td{border-bottom:none}
-.summary-table tr:nth-child(even) td{background:var(--paper)}
-.eff-cell{font-family:'Instrument Serif',serif;font-size:18px;color:var(--accent);text-align:right!important}
-.btn-del{background:none;border:1px solid #e8d5d5;border-radius:5px;color:var(--danger);cursor:pointer;padding:4px 7px;font-size:11px;transition:all .15s}
-.btn-del:hover{background:#fdf0f0;border-color:var(--danger)}
+/* Récap */
+.rtitle{font-family:'Instrument Serif',serif;font-size:19px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.rtable{width:100%;border-collapse:collapse;font-size:13px}
+.rtable th{background:var(--ink);color:#fff;padding:9px 12px;text-align:left;font-weight:500;font-size:11px;letter-spacing:.07em;text-transform:uppercase}
+.rtable td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.rtable tr:last-child td{border-bottom:none}
+.rtable tr:nth-child(even) td{background:var(--paper)}
+.ec{font-family:'Instrument Serif',serif;font-size:18px;color:var(--accent);text-align:right!important}
+.bdel{background:none;border:1px solid #e8d5d5;border-radius:5px;color:var(--danger);cursor:pointer;padding:4px 7px;font-size:11px}
+.bdel:hover{background:#fdf0f0;border-color:var(--danger)}
 
-/* All entries */
-.all-entries{margin-top:24px}
-.entries-meta{font-size:12px;color:var(--muted);margin-bottom:14px}
-.entry-group{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden}
-.entry-group-hdr{background:var(--ink);color:#fff;padding:10px 14px;font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:space-between}
-.del-group-btn{background:none;border:1px solid rgba(255,255,255,.3);border-radius:5px;color:#fff;cursor:pointer;padding:3px 9px;font-size:11px;opacity:.7}
-.del-group-btn:hover{opacity:1}
+/* Entries */
+.emeta{font-size:12px;color:var(--muted);margin-bottom:14px}
+.egroup{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.eghdr{background:var(--ink);color:#fff;padding:10px 14px;font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:space-between}
+.dgbtn{background:none;border:1px solid rgba(255,255,255,.3);border-radius:5px;color:#fff;cursor:pointer;padding:3px 9px;font-size:11px;opacity:.7}
+.dgbtn:hover{opacity:1}
 
-/* Export / admin panel */
-.export-panel{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:24px;margin-top:0}
-.export-panel h3{font-family:'Instrument Serif',serif;font-size:17px;font-weight:400;margin-bottom:5px}
-.export-steps{counter-reset:s;list-style:none;margin-bottom:16px}
-.export-steps li{counter-increment:s;display:flex;align-items:flex-start;gap:10px;font-size:12.5px;margin-bottom:10px;line-height:1.5}
-.export-steps li::before{content:counter(s);min-width:20px;height:20px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px}
-code{background:var(--cream);border-radius:3px;padding:1px 5px;font-size:11px;font-family:monospace}
+/* Admin panel */
+.apanel{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:24px}
+.apanel h3{font-family:'Instrument Serif',serif;font-size:17px;font-weight:400;margin-bottom:5px}
+.tabbar{display:flex;border-bottom:2px solid var(--border);margin-bottom:20px}
+.tabbtn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:10px 18px;border:none;background:none;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s}
+.tabbtn.on{color:var(--accent);border-bottom-color:var(--accent)}
 .csv-area{width:100%;font-family:monospace;font-size:11px;background:#f0f4f8;border:1px solid var(--border);border-radius:5px;padding:10px;resize:vertical;min-height:88px;color:#2a3a4a}
-.export-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.expbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.esteps{counter-reset:s;list-style:none;margin-bottom:16px}
+.esteps li{counter-increment:s;display:flex;align-items:flex-start;gap:10px;font-size:12.5px;margin-bottom:10px;line-height:1.5}
+.esteps li::before{content:counter(s);min-width:20px;height:20px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px}
+code{background:var(--cream);border-radius:3px;padding:1px 5px;font-size:11px;font-family:monospace}
 
 /* Codes table */
-.codes-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:14px}
-.codes-table th{background:var(--ink);color:#fff;padding:9px 12px;text-align:left;font-weight:500;font-size:11px;letter-spacing:.07em;text-transform:uppercase}
-.codes-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
-.codes-table tr:last-child td{border-bottom:none}
-.codes-table tr:nth-child(even) td{background:var(--paper)}
-.code-pill{display:inline-flex;align-items:center;gap:6px;background:#fff8e6;border:1px solid #e8c96a;border-radius:6px;padding:4px 10px;font-family:monospace;font-size:13px;font-weight:700;color:#7a5800;letter-spacing:.12em}
-.copy-code-btn{background:none;border:1px solid var(--border);border-radius:4px;cursor:pointer;padding:3px 8px;font-size:11px;color:var(--muted);transition:all .15s}
-.copy-code-btn:hover{border-color:var(--accent);color:var(--accent)}
+.ctable{width:100%;border-collapse:collapse;font-size:13px}
+.ctable th{background:var(--ink);color:#fff;padding:9px 12px;text-align:left;font-weight:500;font-size:11px;letter-spacing:.07em;text-transform:uppercase}
+.ctable td{padding:9px 12px;border-bottom:1px solid var(--border)}
+.ctable tr:last-child td{border-bottom:none}
+.ctable tr:nth-child(even) td{background:var(--paper)}
+.cpill{display:inline-block;background:#fff8e6;border:1px solid #e8c96a;border-radius:6px;padding:3px 10px;font-family:monospace;font-size:13px;font-weight:700;color:#7a5800;letter-spacing:.12em}
+.cbtn{background:none;border:1px solid var(--border);border-radius:4px;cursor:pointer;padding:3px 8px;font-size:11px;color:var(--muted);transition:all .15s}
+.cbtn:hover{border-color:var(--accent);color:var(--accent)}
+.cbtn.gen{color:var(--success);border-color:#a0d4b8}
+.cbtn.gen:hover{background:#eaf5ee}
 
 /* Toast */
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(18px);background:var(--ink);color:#fff;border-radius:8px;padding:11px 18px;font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);opacity:0;transition:all .3s;z-index:999;white-space:nowrap}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(18px);background:var(--ink);color:#fff;border-radius:8px;padding:11px 18px;font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);opacity:0;transition:all .3s;z-index:9999;white-space:nowrap;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* Admin section */
-.admin-section{max-width:860px;margin:0 auto;padding:0 24px 60px}
+/* Sending indicator */
+.sending{position:fixed;top:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:500;z-index:9999;display:none;align-items:center;gap:10px;box-shadow:var(--shadow-lg)}
+.sending.show{display:flex}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{animation:spin 1s linear infinite}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="header-inner">
-    <div class="header-badge">Formulaire officiel</div>
+  <div class="hi">
+    <div class="badge">Formulaire officiel</div>
     <h1>Saisie des <em>Effectifs</em> — IPES Région Ouest</h1>
-    <p class="subtitle">Sélectionnez votre IPES, ses villes et ses filières, puis renseignez les effectifs.</p>
+    <p class="sub">Sélectionnez votre IPES, la ville, les filières, puis renseignez les effectifs.</p>
   </div>
 </header>
 
 <main>
-  <!-- Progress bar -->
-  <div class="prog-bar">
-    <div class="prog-step active" id="ps1"><div class="dot">1</div><span>IPES</span></div>
-    <div class="prog-line"><div class="fill" id="ln1"></div></div>
-    <div class="prog-step" id="ps2"><div class="dot">2</div><span>Villes</span></div>
-    <div class="prog-line"><div class="fill" id="ln2"></div></div>
-    <div class="prog-step" id="ps3"><div class="dot">3</div><span>Filières</span></div>
-    <div class="prog-line"><div class="fill" id="ln3"></div></div>
-    <div class="prog-step" id="ps4"><div class="dot">4</div><span>Effectifs</span></div>
-    <div class="prog-line"><div class="fill" id="ln4"></div></div>
-    <div class="prog-step" id="ps5"><div class="dot">5</div><span>Récap.</span></div>
+  <!-- Progress -->
+  <div class="prog">
+    <div class="ps active" id="ps1"><div class="d">1</div><span>IPES</span></div>
+    <div class="pl"><div class="f" id="ln1"></div></div>
+    <div class="ps" id="ps2"><div class="d">2</div><span>Ville</span></div>
+    <div class="pl"><div class="f" id="ln2"></div></div>
+    <div class="ps" id="ps3"><div class="d">3</div><span>Filières</span></div>
+    <div class="pl"><div class="f" id="ln3"></div></div>
+    <div class="ps" id="ps4"><div class="d">4</div><span>Effectifs</span></div>
+    <div class="pl"><div class="f" id="ln4"></div></div>
+    <div class="ps" id="ps5"><div class="d">5</div><span>Récap.</span></div>
   </div>
 
-  <!-- ═══ STEP 1 : IPES + vérification code ═══ -->
+  <!-- STEP 1 : IPES -->
   <div class="step active" id="step1">
     <div class="card">
-      <div class="step-label">Étape 1 sur 4</div>
-      <div class="step-title">Quel est votre IPES ?</div>
-      <div class="step-hint">Tapez pour filtrer. Si votre IPES n'est pas dans la liste, saisissez-le directement.</div>
-      <div class="field-wrap">
-        <input type="text" class="ac-input" id="inp-ipes" placeholder="Ex : ISB, IUC, ESCA…" autocomplete="off" spellcheck="false">
-        <svg class="ac-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <div class="ac-dropdown" id="dd-ipes"></div>
+      <div class="slabel">Étape 1 sur 4</div>
+      <div class="stitle">Quel est votre IPES ?</div>
+      <div class="shint">Tapez pour filtrer la liste. Si votre IPES n'y figure pas, saisissez-le manuellement.</div>
+      <div class="fw">
+        <input type="text" class="aci" id="inp-ipes" placeholder="Ex : ISB, IUC, ESCA…" autocomplete="off" spellcheck="false">
+        <svg class="aico" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <div class="add" id="dd-ipes"></div>
       </div>
-      <div class="tags-wrap" id="tag-ipes"></div>
+      <div class="tagw" id="tag-ipes"></div>
 
-      <!-- Zone code — apparaît seulement si IPES déjà connu -->
-      <div id="code-zone" style="display:none;margin-top:18px;">
-        <div class="code-box" id="code-box">
-          <div class="code-badge">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            Cet IPES est déjà enregistré — saisissez le code attribué à <strong id="code-ipes-name"></strong>
+      <!-- Zone code -->
+      <div id="codezone" style="display:none">
+        <div class="codebox" id="codebox">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span style="font-size:13px;color:var(--muted)">Cet IPES est déjà enregistré. Saisissez le code attribué à <strong id="cname" style="color:var(--ink)"></strong></span>
           </div>
-          <input type="text" class="code-input" id="inp-code"
-            placeholder="CODE"
-            maxlength="8"
-            autocomplete="off" spellcheck="false"
-            oninput="this.value=this.value.toUpperCase()"
-            onkeydown="if(event.key==='Enter') verifyCode()">
-          <div id="code-error" style="display:none;margin-top:10px;font-size:12.5px;color:var(--danger);text-align:center;">
-            Code incorrect. Contactez l'administrateur pour obtenir votre code.
-          </div>
-          <div style="text-align:center;margin-top:14px;">
-            <button class="btn btn-primary" onclick="verifyCode()">
+          <input type="text" class="codeinp" id="inp-code" placeholder="● ● ● ● ● ●" maxlength="8" autocomplete="off" spellcheck="false" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')verifyCode()">
+          <div id="coderr" style="display:none;margin-top:10px;font-size:12.5px;color:var(--danger);text-align:center">Code incorrect. Contactez l'administrateur pour obtenir votre code.</div>
+          <div style="text-align:center;margin-top:14px">
+            <button class="btn bp" onclick="verifyCode()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
               Valider le code
             </button>
@@ -218,1016 +207,725 @@ code{background:var(--cream);border-radius:3px;padding:1px 5px;font-size:11px;fo
         </div>
       </div>
 
-      <div class="nav-row">
+      <div class="navr">
         <span></span>
-        <button class="btn btn-primary" id="btn-next1" disabled onclick="goTo(2)">
+        <button class="btn bp" id="btn1" disabled onclick="goTo(2)">
           Suivant <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ═══ STEP 2 : VILLE (sélection unique) ═══ -->
+  <!-- STEP 2 : VILLE -->
   <div class="step" id="step2">
     <div class="card">
-      <div class="step-label">Étape 2 sur 4</div>
-      <div class="step-title">Dans quelle ville ?</div>
-      <div class="step-hint">Tapez pour filtrer. Si votre ville n'est pas dans la liste, saisissez-la directement.</div>
-      <div class="field-wrap">
-        <input type="text" class="ac-input" id="inp-ville" placeholder="Ex : Bafoussam, Dschang…" autocomplete="off" spellcheck="false">
-        <svg class="ac-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-        <div class="ac-dropdown" id="dd-ville"></div>
+      <div class="slabel">Étape 2 sur 4</div>
+      <div class="stitle">Dans quelle ville ?</div>
+      <div class="shint">Tapez pour filtrer. Saisie manuelle possible si votre ville ne figure pas.</div>
+      <div class="fw">
+        <input type="text" class="aci" id="inp-ville" placeholder="Ex : Bafoussam, Dschang…" autocomplete="off" spellcheck="false">
+        <svg class="aico" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        <div class="add" id="dd-ville"></div>
       </div>
-      <div class="tags-wrap" id="tag-ville"></div>
-      <div class="nav-row">
-        <button class="btn btn-ghost" onclick="goTo(1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
-        <button class="btn btn-primary" id="btn-next2" disabled onclick="goTo(3)">Suivant <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      <div class="tagw" id="tag-ville"></div>
+      <div class="navr">
+        <button class="btn bg" onclick="goTo(1)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
+        <button class="btn bp" id="btn2" disabled onclick="goTo(3)">Suivant <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
       </div>
     </div>
   </div>
 
-  <!-- ═══ STEP 3 : FILIÈRES ═══ -->
+  <!-- STEP 3 : FILIÈRES -->
   <div class="step" id="step3">
     <div class="card">
-      <div class="step-label">Étape 3 sur 4</div>
-      <div class="step-title">Quelles filières ?</div>
-      <div class="step-hint">Sélectionnez toutes les filières dispensées dans cet IPES.</div>
-      <div class="field-wrap">
-        <input type="text" class="ac-input" id="inp-filiere" placeholder="Ex : Génie logiciel, Bâtiment…" autocomplete="off" spellcheck="false">
-        <svg class="ac-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <div class="ac-dropdown" id="dd-filiere"></div>
+      <div class="slabel">Étape 3 sur 4</div>
+      <div class="stitle">Quelles filières ?</div>
+      <div class="shint">Sélectionnez toutes les filières de cet IPES. Cliquez ✕ pour retirer.</div>
+      <div class="fw">
+        <input type="text" class="aci" id="inp-filiere" placeholder="Ex : Génie logiciel, Bâtiment…" autocomplete="off" spellcheck="false">
+        <svg class="aico" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <div class="add" id="dd-filiere"></div>
       </div>
-      <div class="tags-wrap" id="tags-filieres"></div>
-      <div class="nav-row">
-        <button class="btn btn-ghost" onclick="goTo(2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
-        <button class="btn btn-primary" id="btn-next3" disabled onclick="buildEffTable();goTo(4)">Saisir les effectifs <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      <div class="ftags" id="tags-filieres"></div>
+      <div class="navr">
+        <button class="btn bg" onclick="goTo(2)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
+        <button class="btn bp" id="btn3" disabled onclick="buildEff();goTo(4)">Saisir les effectifs <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
       </div>
     </div>
   </div>
 
-  <!-- ═══ STEP 4 : EFFECTIFS ═══ -->
+  <!-- STEP 4 : EFFECTIFS -->
   <div class="step" id="step4">
     <div class="card">
-      <div class="step-label">Étape 4 sur 4</div>
-      <div class="step-title">Saisir les effectifs</div>
-      <div class="step-hint">Pour chaque filière, indiquez l'effectif par ville.</div>
-      <div id="eff-table-wrap"></div>
-      <div class="nav-row">
-        <button class="btn btn-ghost" onclick="goTo(3)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
-        <button class="btn btn-primary" onclick="goToRecap()">Vérifier <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      <div class="slabel">Étape 4 sur 4</div>
+      <div class="stitle">Saisir les effectifs</div>
+      <div class="shint">Pour chaque filière, indiquez le nombre d'étudiants. Utilisez − / + ou saisissez directement.</div>
+      <div id="efftable"></div>
+      <div class="navr">
+        <button class="btn bg" onclick="goTo(3)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Retour</button>
+        <button class="btn bp" onclick="goToRecap()">Vérifier <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
       </div>
     </div>
   </div>
 
-  <!-- ═══ STEP 5 : RÉCAP ═══ -->
+  <!-- STEP 5 : RÉCAP -->
   <div class="step" id="step5">
     <div class="card">
-      <div class="step-label">Récapitulatif</div>
-      <div class="step-title">Vérifiez avant d'enregistrer</div>
-      <div class="step-hint">Relisez les données. Supprimez une ligne si nécessaire, puis validez.</div>
-      <div id="recap-content"></div>
-      <div class="nav-row">
-        <button class="btn btn-ghost" onclick="goTo(4)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Modifier</button>
-        <button class="btn btn-success" onclick="saveAll()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Enregistrer tout
+      <div class="slabel">Récapitulatif</div>
+      <div class="stitle">Vérifiez avant d'enregistrer</div>
+      <div class="shint">Relisez les données. Supprimez une ligne si nécessaire, puis validez.</div>
+      <div id="recap"></div>
+      <div class="navr">
+        <button class="btn bg" onclick="goTo(4)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Modifier</button>
+        <button class="btn bs" onclick="saveAll()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Enregistrer
         </button>
       </div>
     </div>
-    <div class="all-entries" id="all-entries">
-      <div class="entries-meta" id="entries-meta"></div>
-      <div id="entries-list"></div>
-      <button class="btn btn-ghost" onclick="newEntry()" style="margin-top:14px;font-size:13px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg> Ajouter un nouvel IPES
-      </button>
-    </div>
+    <div style="margin-top:20px" id="user-result"></div>
+    <button class="btn bg" onclick="newEntry()" style="margin-top:12px;font-size:13px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg> Nouvel IPES
+    </button>
   </div>
 </main>
 
-<!-- ═══ ESPACE ADMIN — PERMANENT ═══ -->
-<div class="admin-section">
-  <div class="export-panel" id="admin-panel">
+<!-- ADMIN PERMANENT -->
+<div style="max-width:860px;margin:0 auto;padding:0 24px 60px">
+  <div class="apanel" id="adminpanel">
 
     <!-- VERROU -->
-    <div id="admin-lock">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+    <div id="alock">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         <h3>Espace administrateur</h3>
       </div>
-      <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px;line-height:1.5;">Réservé à l'administrateur. Saisissez le mot de passe pour accéder aux données et aux codes IPES.</p>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-        <input type="password" id="admin-pwd-input" placeholder="Mot de passe administrateur"
-          style="flex:1;min-width:200px;font-family:'DM Sans',sans-serif;font-size:14px;border:2px solid var(--border);border-radius:8px;padding:10px 14px;outline:none;transition:border-color .2s;"
-          onkeydown="if(event.key==='Enter') checkAdminPwd()"
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px;line-height:1.5">Accès réservé à l'administrateur. Saisissez le mot de passe.</p>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input type="password" id="apwd" placeholder="Mot de passe"
+          style="flex:1;min-width:200px;font-family:'DM Sans',sans-serif;font-size:14px;border:2px solid var(--border);border-radius:8px;padding:10px 14px;outline:none;transition:border-color .2s"
+          onkeydown="if(event.key==='Enter')adminLogin()"
           onfocus="this.style.borderColor='var(--accent)'"
           onblur="this.style.borderColor='var(--border)'">
-        <button class="btn btn-primary" onclick="checkAdminPwd()">
+        <button class="btn bp" onclick="adminLogin()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/></svg>
           Accéder
         </button>
       </div>
-      <div id="admin-error" style="display:none;margin-top:10px;font-size:12.5px;color:var(--danger);">Mot de passe incorrect.</div>
+      <div id="aerr" style="display:none;margin-top:10px;font-size:12.5px;color:var(--danger)">Mot de passe incorrect.</div>
     </div>
 
     <!-- CONTENU ADMIN -->
-    <div id="admin-content" style="display:none;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
-        <div style="display:flex;align-items:center;gap:8px;">
+    <div id="acontent" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
-          <h3>Administration — Données & Codes IPES</h3>
+          <h3>Administration</h3>
         </div>
-        <button class="btn btn-ghost" onclick="adminLogout()" style="font-size:12px;padding:6px 14px;">
+        <button class="btn bg" onclick="adminLogout()" style="font-size:12px;padding:6px 14px">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
           Déconnexion
         </button>
       </div>
 
       <!-- Stats -->
-      <div id="admin-stats" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;"></div>
+      <div id="astats" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px"></div>
 
-      <!-- ONGLETS -->
-      <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:20px;">
-        <button id="tab-codes-btn" onclick="showTab('codes')" style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;border:none;background:none;cursor:pointer;color:var(--accent);border-bottom:2px solid var(--accent);margin-bottom:-2px;">
-          🔑 Codes IPES
-        </button>
-        <button id="tab-data-btn" onclick="showTab('data')" style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;border:none;background:none;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;">
-          📊 Données saisies
-        </button>
-        <button id="tab-export-btn" onclick="showTab('export')" style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:10px 20px;border:none;background:none;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;">
-          ⬇️ Export CSV
-        </button>
+      <!-- Onglets -->
+      <div class="tabbar">
+        <button class="tabbtn on" id="t-codes-btn" onclick="showTab('codes')">🔑 Codes IPES</button>
+        <button class="tabbtn" id="t-data-btn"  onclick="showTab('data')">📊 Données</button>
+        <button class="tabbtn" id="t-exp-btn"   onclick="showTab('exp')">⬇️ Export</button>
       </div>
 
-      <!-- ONGLET CODES -->
-      <div id="tab-codes" style="display:block;">
-        <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.5;">
-          Générez les codes à l'avance et transmettez-les aux responsables des IPES. Un code attribué ne change jamais.
-        </p>
-        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
-          <input type="text" id="code-search" placeholder="Rechercher un IPES…"
-            oninput="renderCodesTable()"
-            style="flex:1;min-width:180px;font-family:'DM Sans',sans-serif;font-size:13px;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;outline:none;transition:border-color .2s;background:var(--paper);"
-            onfocus="this.style.borderColor='var(--accent)'"
-            onblur="this.style.borderColor='var(--border)'">
-          <button class="btn btn-primary" onclick="generateAllCodes()" style="font-size:12px;padding:8px 16px;">
+      <!-- Onglet Codes -->
+      <div id="t-codes">
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.5">Générez les codes à l'avance et transmettez-les aux responsables. Un code attribué ne change jamais.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+          <input type="text" id="codesearch" placeholder="Rechercher un IPES…" oninput="renderCodesTab()"
+            style="flex:1;min-width:160px;font-family:'DM Sans',sans-serif;font-size:13px;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;outline:none;background:var(--paper)"
+            onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+          <button class="btn bp" onclick="genAllCodes()" style="font-size:12px;padding:8px 16px">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-            Générer tous les codes
+            Générer tous
           </button>
-          <button class="btn btn-ghost" onclick="copyAllCodes()" style="font-size:12px;padding:8px 16px;">
+          <button class="btn bg" onclick="copyAllCodes()" style="font-size:12px;padding:8px 16px">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-            Copier tous les codes
+            Copier tout
           </button>
-          <button class="btn btn-ghost" onclick="downloadCodesPDF()" style="font-size:12px;padding:8px 16px;color:var(--danger);border-color:#e8d5d5;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-            Imprimer / PDF
-          </button>
+          <button class="btn bg" onclick="printCodes()" style="font-size:12px;padding:8px 16px">🖨️ Imprimer</button>
         </div>
-        <div id="codes-table-wrap"></div>
+        <div id="codestable"></div>
       </div>
 
-      <!-- ONGLET DONNÉES -->
-      <div id="tab-data" style="display:none;">
-        <div id="admin-entries-list"></div>
+      <!-- Onglet Données -->
+      <div id="t-data" style="display:none">
+        <div id="datalist"></div>
       </div>
 
-      <!-- ONGLET EXPORT -->
-      <div id="tab-export" style="display:none;">
-        <div style="background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:16px;">
-          <div style="font-size:13px;font-weight:600;margin-bottom:8px;">🔌 Tester la connexion Google Sheets</div>
-          <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5;">Cliquez pour envoyer une ligne de test dans votre Google Sheet et vérifier que la connexion fonctionne.</p>
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-            <button id="test-sheets-btn" class="btn btn-primary" onclick="testSheetsConnection()" style="font-size:12px;padding:8px 16px;">Tester la connexion Sheets</button>
-            <span id="test-sheets-result" style="font-size:12.5px;"></span>
+      <!-- Onglet Export -->
+      <div id="t-exp" style="display:none">
+        <div style="background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:16px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px">🔌 Tester la connexion Google Sheets</div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">Envoie une ligne de test pour vérifier que la connexion fonctionne.</p>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <button id="testbtn" class="btn bp" onclick="testSheets()" style="font-size:12px;padding:8px 16px">Tester la connexion</button>
+            <span id="testresult" style="font-size:12.5px"></span>
           </div>
         </div>
-        <ol class="export-steps">
-          <li>Cliquez sur <strong>"Copier CSV"</strong> ci-dessous.</li>
+        <ol class="esteps">
+          <li>Cliquez <strong>"Copier CSV"</strong> ci-dessous.</li>
           <li>Ouvrez <a href="https://sheets.new" target="_blank" style="color:var(--accent)">sheets.new</a>.</li>
-          <li>Collez avec <code>Ctrl+V</code> dans une cellule vide.</li>
-          <li>Menu <strong>Données → Fractionner le texte en colonnes</strong>, séparateur : <code>Virgule</code>.</li>
+          <li>Collez <code>Ctrl+V</code> dans une cellule vide.</li>
+          <li>Menu <strong>Données → Fractionner</strong>, séparateur : <code>Virgule</code>.</li>
         </ol>
-        <textarea class="csv-area" id="csv-area" readonly></textarea>
-        <div class="export-btns">
-          <button class="btn btn-primary" onclick="copyCSV()">
+        <textarea class="csv-area" id="csvarea" readonly></textarea>
+        <div class="expbtns">
+          <button class="btn bp" onclick="copyCSV()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copier CSV
           </button>
-          <button class="btn btn-ghost" onclick="downloadCSV()">
+          <button class="btn bg" onclick="dlCSV()">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> Télécharger .csv
           </button>
-          <a href="https://sheets.new" target="_blank" class="btn btn-ghost" style="text-decoration:none">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg> Ouvrir Sheets
+          <a href="https://sheets.new" target="_blank" class="btn bg" style="text-decoration:none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg> Sheets
           </a>
-          <button class="btn btn-ghost" onclick="clearAllData()" style="color:var(--danger);border-color:#e8d5d5;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg> Effacer toutes les données
+          <button class="btn bg" onclick="clearData()" style="color:var(--danger);border-color:#e8d5d5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg> Effacer tout
           </button>
         </div>
       </div>
-
-    </div><!-- /admin-content -->
-  </div><!-- /export-panel -->
-</div><!-- /admin-section -->
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast"></div>
+<div class="sending" id="sending">
+  <svg class="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+  Envoi vers Google Sheets…
+</div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-// CONFIG
-// ═══════════════════════════════════════════════════════
-const SCRIPT_URL    = "https://script.google.com/macros/s/AKfycbzk4etzT7KzeXT5pwilsUrwtl1LhTUrCUFhPRfbtrMGHu9vMVWVi-zPqH2hJph6NpYh/exec";
-const ADMIN_PASSWORD = 'Admin2025!';
+// ─── CONFIG ────────────────────────────────────────────────────────────────
+const SCRIPT_URL     = "https://script.google.com/macros/s/AKfycbzk4etzT7KzeXT5pwilsUrwtl1LhTUrCUFhPRfbtrMGHu9vMVWVi-zPqH2hJph6NpYh/exec";
+const ADMIN_PASSWORD = "Admin2025!";
 
-// ═══════════════════════════════════════════════════════
-// DONNÉES
-// ═══════════════════════════════════════════════════════
-const IPES_LIST = ["BIAST","BON BERGER","CHIMI","CNFZV FOUMBAN","DAUQ","EFSDC SANTA","ESCA","ESG","ESGIT","ESJEC","ESSIT","ETA BAFANG","GTES","HISTBA","ICAB","IESF","IKES","IME-BAF","IMK","INSSAS","INTIME","IPTF","IS BAFOUSSAM","ISA","ISAMET","ISAP","ISB","ISB-B","ISBI","ISBMPB","ISDMB","ISGEA","ISHEP","ISMTA","ISNG","ISPB","ISPBI","ISSAB","ISSAFO","ISSBMS-B","ISSMATA-BRTA","ISSTECOA","ISSTN","ISTA OMBESSA","ISTACO","ISTEC","ISTEDD","ISTSCOA","IUC","IUEC","IUES INSAM","IUH","IURB","IUT BDJN"];
-const FILIERES_LIST = ["ADMINISTRATION DES COLLECTIVITES TERRITORIALES","ANALYSES BIOLOGIQUES ET BIOCHIMIQUES","ASSISTANT MANAGER","BATIMENT","CHAUDRONNERIE ET SOUDURE","COMMUNICATION DES ORGANISATIONS","COMPTABILITE ET GESTION DES ENTREPRISES","CONSEIL AGROPASTORAL","CONSTRUCTION MECANIQUE","DOUANE ET TRANSIT","E-COMMERCE ET MARKETING NUMERIQUE","ELECTROTECHNIQUE","ENERGIES RENOUVELABLES","ENTREPRENEURIAT AGROPASTORAL","FABRICATION MECANIQUE","FROID ET CLIMATISATION","GENIE CULINAIRE","GENIE LOGICIEL","GEOMETRE TOPOGRAPHE","GESTION DES PROJETS","GESTION DES SYSTEMES D'INFORMATION","GESTION ET MANAGEMENT HOTELIER","HYGIENE SECURITE ENVIRONNEMENT","INDUSTRIE DE L'HABILLEMENT","INDUSTRIES ALIMENTAIRES","INFOGRAPHIE ET WEB DESIGN","INFORMATIQUE INDUSTRIELLE ET AUTOMATISME","INSTALLATION SANITAIRE","JOURNALISME","KINESITHERAPIE","MAINTENANCE DES APPAREILS BIOMEDICAUX","MAINTENANCE DES SYSTEMES ELECTRONIQUES","MAINTENANCE DES SYSTEMES INFORMATIQUES","MAINTENANCE ET APRES VENTE AUTOMOBILE","MAINTENANCE INDUSTRIELLE ET PRODUCTIQUE","MECATRONIQUE","MENUISERIE ET EBENISTERIE","ODONTOSTOMATOLOGIE","OPTICIEN-LUNETIER","PRODUCTION ANIMALE","PRODUCTION VEGETALE","PUERICULTURE ET GERONTOLOGIE","RADIOLOGIE ET IMAGERIE MEDICALE","RESEAUX ET SECURITE","SAGE-FEMME","SCIENCES INFIRMIERES","TECHNIQUES DE LABORATOIRE","TECHNIQUES PHARMACEUTIQUES","TELECOMMUNICATIONS","TRAVAUX PUBLICS","ASSURANCES","BANQUE ET FINANCE","GESTION DES RESSOURCES HUMAINES","GESTION FISCALE","GESTION LOGISTIQUE ET TRANSPORT","MARKETING-COMMERCE-VENTE"];
-const VILLES_LIST   = ["Babadjou","Bafang","Bafoussam","Bandjoun","Bangangte","Bansoa","Bayangam","Dschang","Foumban","Foumbot","Ombessa","Santa"];
+// ─── DONNÉES ───────────────────────────────────────────────────────────────
+const IPES = ["BIAST","BON BERGER","CHIMI","CNFZV FOUMBAN","DAUQ","EFSDC SANTA","ESCA","ESG","ESGIT","ESJEC","ESSIT","ETA BAFANG","GTES","HISTBA","ICAB","IESF","IKES","IME-BAF","IMK","INSSAS","INTIME","IPTF","IS BAFOUSSAM","ISA","ISAMET","ISAP","ISB","ISB-B","ISBI","ISBMPB","ISDMB","ISGEA","ISHEP","ISMTA","ISNG","ISPB","ISPBI","ISSAB","ISSAFO","ISSBMS-B","ISSMATA-BRTA","ISSTECOA","ISSTN","ISTA OMBESSA","ISTACO","ISTEC","ISTEDD","ISTSCOA","IUC","IUEC","IUES INSAM","IUH","IURB","IUT BDJN"];
+const FILIERES = ["ADMINISTRATION DES COLLECTIVITES TERRITORIALES","ANALYSES BIOLOGIQUES ET BIOCHIMIQUES","ASSISTANT MANAGER","BATIMENT","CHAUDRONNERIE ET SOUDURE","COMMUNICATION DES ORGANISATIONS","COMPTABILITE ET GESTION DES ENTREPRISES","CONSEIL AGROPASTORAL","CONSTRUCTION MECANIQUE","DOUANE ET TRANSIT","E-COMMERCE ET MARKETING NUMERIQUE","ELECTROTECHNIQUE","ENERGIES RENOUVELABLES","ENTREPRENEURIAT AGROPASTORAL","FABRICATION MECANIQUE","FROID ET CLIMATISATION","GENIE CULINAIRE","GENIE LOGICIEL","GEOMETRE TOPOGRAPHE","GESTION DES PROJETS","GESTION DES SYSTEMES D'INFORMATION","GESTION ET MANAGEMENT HOTELIER","HYGIENE SECURITE ENVIRONNEMENT","INDUSTRIE DE L'HABILLEMENT","INDUSTRIES ALIMENTAIRES","INFOGRAPHIE ET WEB DESIGN","INFORMATIQUE INDUSTRIELLE ET AUTOMATISME","INSTALLATION SANITAIRE","JOURNALISME","KINESITHERAPIE","MAINTENANCE DES APPAREILS BIOMEDICAUX","MAINTENANCE DES SYSTEMES ELECTRONIQUES","MAINTENANCE DES SYSTEMES INFORMATIQUES","MAINTENANCE ET APRES VENTE AUTOMOBILE","MAINTENANCE INDUSTRIELLE ET PRODUCTIQUE","MECATRONIQUE","MENUISERIE ET EBENISTERIE","ODONTOSTOMATOLOGIE","OPTICIEN-LUNETIER","PRODUCTION ANIMALE","PRODUCTION VEGETALE","PUERICULTURE ET GERONTOLOGIE","RADIOLOGIE ET IMAGERIE MEDICALE","RESEAUX ET SECURITE","SAGE-FEMME","SCIENCES INFIRMIERES","TECHNIQUES DE LABORATOIRE","TECHNIQUES PHARMACEUTIQUES","TELECOMMUNICATIONS","TRAVAUX PUBLICS","ASSURANCES","BANQUE ET FINANCE","GESTION DES RESSOURCES HUMAINES","GESTION FISCALE","GESTION LOGISTIQUE ET TRANSPORT","MARKETING-COMMERCE-VENTE"];
+const VILLES = ["Babadjou","Bafang","Bafoussam","Bandjoun","Bangangte","Bansoa","Bayangam","Dschang","Foumban","Foumbot","Ombessa","Santa"];
 
-// ═══════════════════════════════════════════════════════
-// STOCKAGE
-// ═══════════════════════════════════════════════════════
-const STORAGE_KEY  = 'ipes_all_entries';
-const CODES_KEY    = 'ipes_codes'; // { [nomIPES]: code }
+// ─── STORAGE ───────────────────────────────────────────────────────────────
+const SK = 'ipes_entries', CK = 'ipes_codes';
+const loadE = () => { try{return JSON.parse(localStorage.getItem(SK)||'[]');}catch{return[];} };
+const saveE = d => localStorage.setItem(SK, JSON.stringify(d));
+const loadC = () => { try{return JSON.parse(localStorage.getItem(CK)||'{}');}catch{return{};} };
+const saveC = d => localStorage.setItem(CK, JSON.stringify(d));
 
-function loadEntries(){ try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');}catch{return[];} }
-function saveEntries(d){ localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
-function loadCodes(){   try{return JSON.parse(localStorage.getItem(CODES_KEY)||'{}');}catch{return{};} }
-function saveCodes(d){  localStorage.setItem(CODES_KEY, JSON.stringify(d)); }
+// ─── CODE GENERATION ───────────────────────────────────────────────────────
+function mkCode(){
+  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:6},()=>c[Math.floor(Math.random()*c.length)]).join('');
+}
+function getCode(ipes){ const c=loadC(); if(!c[ipes]){c[ipes]=mkCode();saveC(c);} return c[ipes]; }
 
-// Génère un code unique de 6 caractères alphanumériques
-function generateCode(){
-  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  return Array.from({length:6},()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+// IPES connu = a déjà soumis des données OU a un code pré-attribué
+function isKnown(ipes){
+  const n=ipes.trim().toLowerCase();
+  if(loadE().some(e=>e.ipes.trim().toLowerCase()===n)) return true;
+  return Object.keys(loadC()).some(k=>k.trim().toLowerCase()===n);
 }
 
-// Retourne le code d'un IPES (le crée s'il n'existe pas encore)
-function getOrCreateCode(ipes){
-  const codes = loadCodes();
-  if(!codes[ipes]){
-    codes[ipes] = generateCode();
-    saveCodes(codes);
-  }
-  return codes[ipes];
-}
-
-// IPES connu = a un code pré-généré par l'admin OU a déjà soumis des données
-// Dans les deux cas on demande le code pour les soumissions ultérieures
-function ipesIsKnown(ipes) {
-  const n = ipes.trim().toLowerCase();
-  // 1. A-t-il déjà soumis des données ?
-  const entries = loadEntries();
-  if (entries.some(e => e.ipes.trim().toLowerCase() === n)) return true;
-  // 2. L'admin lui a-t-il pré-généré un code ?
-  const codes = loadCodes();
-  return Object.keys(codes).some(k => k.trim().toLowerCase() === n);
-}
-
-// ═══════════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════════
-let cur = { ipes:'', ville:'', filieres:[] };
+// ─── STATE ─────────────────────────────────────────────────────────────────
+let S = {ipes:'', ville:'', filieres:[]};
 let effData = {};
-let pendingLines = [];
-let savedGroups = [];
-let currentStep = 1;
-let isAdminAuthenticated = false;
+let pending = [];
+let step = 1;
+let isAdmin = false;
 
-// ═══════════════════════════════════════════════════════
-// UTILITAIRES
-// ═══════════════════════════════════════════════════════
-function norm(s){ return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
-const ICO_PLUS = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>`;
-const ICO_X    = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>`;
-const ICO_BOOK = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`;
+// ─── UTILS ─────────────────────────────────────────────────────────────────
+const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const IPLUS = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>`;
+const IX = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>`;
+const IBOOK = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`;
 
-// ═══════════════════════════════════════════════════════
-// AUTOCOMPLETE IPES (single + vérification code)
-// ═══════════════════════════════════════════════════════
-(function(){
-  const inp = document.getElementById('inp-ipes');
-  const dd  = document.getElementById('dd-ipes');
-  const nb  = document.getElementById('btn-next1');
+// ─── SINGLE AUTOCOMPLETE ───────────────────────────────────────────────────
+function makeSingleAC(inpId, ddId, list, onPick, nbId, showLock){
+  const inp=document.getElementById(inpId), dd=document.getElementById(ddId);
+  const nb=nbId?document.getElementById(nbId):null;
   let hl=-1;
 
   function render(q){
     const nq=norm(q);
-    const matches = q ? IPES_LIST.filter(v=>norm(v).includes(nq)) : IPES_LIST;
+    const matches=q?list.filter(v=>norm(v).includes(nq)):list;
     dd.innerHTML=''; hl=-1;
     matches.slice(0,40).forEach(v=>{
-      const d=document.createElement('div'); d.className='ac-item';
+      const d=document.createElement('div'); d.className='ai';
       const idx=nq?norm(v).indexOf(nq):-1;
-      const known = ipesIsKnown(v);
-      const lockIcon = known ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.5;flex-shrink:0"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>` : '';
-      const label = idx>=0 ? v.slice(0,idx)+'<mark>'+v.slice(idx,idx+q.length)+'</mark>'+v.slice(idx+q.length) : v;
-      d.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7.05 11.5 7.35 11.76a1 1 0 0 0 1.3 0C12.95 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg>${label}${lockIcon}`;
-      d.addEventListener('mousedown',e=>{ e.preventDefault(); pick(v,false); });
-      dd.appendChild(d);
-    });
-    if(q && !IPES_LIST.some(v=>norm(v)===nq)){
-      const m=document.createElement('div'); m.className='ac-manual';
-      m.innerHTML=`${ICO_PLUS} Utiliser "<strong>${q}</strong>" (nouveau)`;
-      m.addEventListener('mousedown',e=>{ e.preventDefault(); pick(q,true); });
-      dd.appendChild(m);
-    }
-    if(matches.length||q) dd.classList.add('open'); else dd.classList.remove('open');
-  }
-
-  function pick(v, isManual){
-    cur.ipes=v;
-    inp.value=v; inp.classList.add('has-value'); if(isManual) inp.classList.add('manual-v');
-    dd.classList.remove('open');
-    document.getElementById('tag-ipes').innerHTML=`<span class="tag-pill${isManual?' manual-v':''}">${v}</span>`;
-    // Vérifier si IPES déjà connu
-    if(ipesIsKnown(v)){
-      // Demander le code
-      document.getElementById('code-zone').style.display='block';
-      document.getElementById('code-ipes-name').textContent=v;
-      document.getElementById('inp-code').value='';
-      document.getElementById('code-error').style.display='none';
-      document.getElementById('code-box').classList.remove('error-state');
-      nb.disabled=true;
-      setTimeout(()=>document.getElementById('inp-code').focus(),100);
-    } else {
-      // Nouvel IPES — accès direct
-      document.getElementById('code-zone').style.display='none';
-      nb.disabled=false;
-    }
-  }
-
-  inp.addEventListener('focus',()=>render(inp.value));
-  inp.addEventListener('input',()=>{
-    cur.ipes='';
-    inp.classList.remove('has-value','manual-v');
-    document.getElementById('tag-ipes').innerHTML='';
-    document.getElementById('code-zone').style.display='none';
-    nb.disabled=true;
-    render(inp.value);
-  });
-  inp.addEventListener('blur',()=>setTimeout(()=>dd.classList.remove('open'),160));
-  inp.addEventListener('keydown',e=>{
-    const its=[...dd.querySelectorAll('.ac-item,.ac-manual')];
-    if(e.key==='ArrowDown'){e.preventDefault();hl=Math.min(hl+1,its.length-1);its.forEach((el,i)=>el.classList.toggle('hl',i===hl));}
-    else if(e.key==='ArrowUp'){e.preventDefault();hl=Math.max(hl-1,-1);its.forEach((el,i)=>el.classList.toggle('hl',i===hl));}
-    else if(e.key==='Enter'){e.preventDefault();if(hl>=0)its[hl].dispatchEvent(new MouseEvent('mousedown'));else if(inp.value.trim())pick(inp.value.trim(),!IPES_LIST.some(v=>norm(v)===norm(inp.value.trim())));}
-    else if(e.key==='Escape')dd.classList.remove('open');
-  });
-})();
-
-async function verifyCode(){
-  const inp = document.getElementById('inp-code');
-  const entered = inp.value.trim().toUpperCase();
-  if (!entered) return;
-
-  const btn = document.querySelector('#code-box .btn-primary');
-  if(btn){ btn.disabled=true; btn.textContent='Vérification…'; }
-
-  // 1. Vérification en ligne (Sheets) — source de vérité
-  let valid = await checkCodeOnline(cur.ipes, entered);
-
-  // 2. Fallback sur localStorage si hors ligne
-  if (valid === null) {
-    const codes = loadCodes();
-    const expected = codes[cur.ipes] || Object.entries(codes).find(([k])=>k.trim().toLowerCase()===cur.ipes.trim().toLowerCase())?.[1];
-    valid = expected ? (entered === expected) : false;
-  }
-
-  if(btn){ btn.disabled=false; btn.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg> Valider le code'; }
-
-  if(valid){
-    document.getElementById('code-error').style.display='none';
-    document.getElementById('code-box').classList.remove('error-state');
-    document.getElementById('btn-next1').disabled=false;
-    showToast('✅ Code validé — vous pouvez continuer.');
-  } else {
-    document.getElementById('code-error').style.display='block';
-    document.getElementById('code-box').classList.remove('error-state');
-    void document.getElementById('code-box').offsetWidth;
-    document.getElementById('code-box').classList.add('error-state');
-    inp.value=''; inp.focus();
-  }
-}
-
-// ═══════════════════════════════════════════════════════
-// AUTOCOMPLETE VILLE (sélection unique, comme IPES)
-// ═══════════════════════════════════════════════════════
-(function(){
-  const inp=document.getElementById('inp-ville');
-  const dd=document.getElementById('dd-ville');
-  const nb=document.getElementById('btn-next2');
-  let hl=-1;
-
-  function render(q){
-    const nq=norm(q);
-    const matches=q?VILLES_LIST.filter(v=>norm(v).includes(nq)):VILLES_LIST;
-    dd.innerHTML=''; hl=-1;
-    matches.slice(0,30).forEach(v=>{
-      const d=document.createElement('div'); d.className='ac-item';
-      const idx=nq?norm(v).indexOf(nq):-1;
-      const ico=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`;
-      d.innerHTML=ico+(idx>=0?v.slice(0,idx)+'<mark>'+v.slice(idx,idx+q.length)+'</mark>'+v.slice(idx+q.length):v);
+      const lock=showLock&&isKnown(v)?`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.4;flex-shrink:0;margin-left:auto"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`:'';
+      const lbl=idx>=0?v.slice(0,idx)+'<mark>'+v.slice(idx,idx+q.length)+'</mark>'+v.slice(idx+q.length):v;
+      d.innerHTML=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7.05 11.5 7.35 11.76a1 1 0 0 0 1.3 0C12.95 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg>${lbl}${lock}`;
       d.addEventListener('mousedown',e=>{e.preventDefault();pick(v,false);});
       dd.appendChild(d);
     });
-    if(q&&!VILLES_LIST.some(v=>norm(v)===nq)){
-      const m=document.createElement('div'); m.className='ac-manual';
-      m.innerHTML=`${ICO_PLUS} Utiliser "<strong>${q}</strong>" (saisie manuelle)`;
+    if(q&&!list.some(v=>norm(v)===nq)){
+      const m=document.createElement('div');m.className='am';
+      m.innerHTML=`${IPLUS} Utiliser "<strong>${q}</strong>"`;
       m.addEventListener('mousedown',e=>{e.preventDefault();pick(q,true);});
       dd.appendChild(m);
     }
     if(matches.length||q) dd.classList.add('open'); else dd.classList.remove('open');
   }
 
-  function pick(v,isManual){
-    cur.ville=v;
-    inp.value=v; inp.classList.add('has-value'); if(isManual) inp.classList.add('manual-v');
+  function pick(v,isM){
+    inp.value=v; inp.classList.add('ok'); if(isM) inp.classList.add('manual');
     dd.classList.remove('open');
-    document.getElementById('tag-ville').innerHTML=`<span class="tag-pill${isManual?' manual-v':''}">${v}</span>`;
-    nb.disabled=false;
+    onPick(v,isM);
   }
 
   inp.addEventListener('focus',()=>render(inp.value));
   inp.addEventListener('input',()=>{
-    cur.ville=''; inp.classList.remove('has-value','manual-v');
-    document.getElementById('tag-ville').innerHTML=''; nb.disabled=true;
+    inp.classList.remove('ok','manual');
+    onPick('',false);
+    if(nb) nb.disabled=true;
     render(inp.value);
   });
   inp.addEventListener('blur',()=>setTimeout(()=>dd.classList.remove('open'),160));
   inp.addEventListener('keydown',e=>{
-    const its=[...dd.querySelectorAll('.ac-item,.ac-manual')];
+    const its=[...dd.querySelectorAll('.ai,.am')];
     if(e.key==='ArrowDown'){e.preventDefault();hl=Math.min(hl+1,its.length-1);its.forEach((el,i)=>el.classList.toggle('hl',i===hl));}
     else if(e.key==='ArrowUp'){e.preventDefault();hl=Math.max(hl-1,-1);its.forEach((el,i)=>el.classList.toggle('hl',i===hl));}
-    else if(e.key==='Enter'){e.preventDefault();if(hl>=0)its[hl].dispatchEvent(new MouseEvent('mousedown'));else if(inp.value.trim())pick(inp.value.trim(),!VILLES_LIST.some(v=>norm(v)===norm(inp.value.trim())));}
+    else if(e.key==='Enter'){e.preventDefault();if(hl>=0)its[hl].dispatchEvent(new MouseEvent('mousedown'));else if(inp.value.trim())pick(inp.value.trim(),!list.some(v=>norm(v)===norm(inp.value.trim())));}
     else if(e.key==='Escape')dd.classList.remove('open');
   });
-})();
+}
 
-// MULTI AUTOCOMPLETE (filières uniquement)
-// ═══════════════════════════════════════════════════════
-function makeMultiAC(inputId,ddId,LIST,getArr,wrapId,nextBtnId){
-  const inp=document.getElementById(inputId), dd=document.getElementById(ddId);
-  const nb=nextBtnId?document.getElementById(nextBtnId):null;
+// ─── MULTI AUTOCOMPLETE (filières) ─────────────────────────────────────────
+function makeMultiAC(inpId,ddId,list,getArr,wrapId,nbId){
+  const inp=document.getElementById(inpId),dd=document.getElementById(ddId);
+  const nb=nbId?document.getElementById(nbId):null;
   let hl=-1;
 
   function render(q){
-    const nq=norm(q), sel=getArr();
-    let matches=LIST.filter(v=>!sel.includes(v));
-    if(q) matches=matches.filter(v=>norm(v).includes(nq));
+    const nq=norm(q),sel=getArr();
+    let m=list.filter(v=>!sel.includes(v));
+    if(q) m=m.filter(v=>norm(v).includes(nq));
     dd.innerHTML=''; hl=-1;
-    if(!matches.length&&!q){dd.classList.remove('open');return;}
-    matches.slice(0,40).forEach(v=>{
-      const d=document.createElement('div'); d.className='ac-item';
+    if(!m.length&&!q){dd.classList.remove('open');return;}
+    m.slice(0,40).forEach(v=>{
+      const d=document.createElement('div');d.className='ai';
       const idx=nq?norm(v).indexOf(nq):-1;
-      d.innerHTML=ICO_PLUS+(idx>=0?v.slice(0,idx)+'<mark>'+v.slice(idx,idx+q.length)+'</mark>'+v.slice(idx+q.length):v);
-      d.addEventListener('mousedown',e=>{e.preventDefault();addItem(v,false);inp.value='';render('');});
+      d.innerHTML=IPLUS+(idx>=0?v.slice(0,idx)+'<mark>'+v.slice(idx,idx+q.length)+'</mark>'+v.slice(idx+q.length):v);
+      d.addEventListener('mousedown',e=>{e.preventDefault();add(v,false);inp.value='';render('');});
       dd.appendChild(d);
     });
-    if(q&&!LIST.some(v=>norm(v)===nq)&&!getArr().includes(q)){
-      const m=document.createElement('div'); m.className='ac-manual';
-      m.innerHTML=`${ICO_PLUS} Ajouter "<strong>${q}</strong>"`;
-      m.addEventListener('mousedown',e=>{e.preventDefault();addItem(q,true);inp.value='';render('');});
-      dd.appendChild(m);
+    if(q&&!list.some(v=>norm(v)===nq)&&!getArr().includes(q)){
+      const mn=document.createElement('div');mn.className='am';
+      mn.innerHTML=`${IPLUS} Ajouter "<strong>${q}</strong>"`;
+      mn.addEventListener('mousedown',e=>{e.preventDefault();add(q,true);inp.value='';render('');});
+      dd.appendChild(mn);
     }
-    if(matches.length||q) dd.classList.add('open'); else dd.classList.remove('open');
+    if(m.length||q) dd.classList.add('open'); else dd.classList.remove('open');
   }
 
-  function addItem(v,isManual){
+  function add(v,isM){
     const arr=getArr(); if(arr.includes(v)) return; arr.push(v);
-    const wrap=document.getElementById(wrapId);
-    const pill=document.createElement('span');
-    pill.className='tag-pill'+(isManual?' manual-v':'');
-    const btn=document.createElement('button'); btn.className='remove-btn'; btn.title='Retirer'; btn.innerHTML=ICO_X;
-    btn.onclick=()=>{const i=arr.indexOf(v);if(i>-1)arr.splice(i,1);pill.remove();if(nb)nb.disabled=arr.length===0;};
-    pill.appendChild(document.createTextNode(v+'\u00a0')); pill.appendChild(btn);
-    wrap.appendChild(pill); if(nb) nb.disabled=false;
+    const w=document.getElementById(wrapId);
+    const p=document.createElement('span'); p.className='tag'+(isM?' manual':'');
+    const b=document.createElement('button'); b.className='rb'; b.title='Retirer'; b.innerHTML=IX;
+    b.onclick=()=>{const i=arr.indexOf(v);if(i>-1)arr.splice(i,1);p.remove();if(nb)nb.disabled=arr.length===0;};
+    p.appendChild(document.createTextNode(v+'\u00a0')); p.appendChild(b);
+    w.appendChild(p); if(nb) nb.disabled=false;
   }
 
   inp.addEventListener('focus',()=>render(inp.value));
   inp.addEventListener('input',()=>render(inp.value));
   inp.addEventListener('blur',()=>setTimeout(()=>dd.classList.remove('open'),160));
   inp.addEventListener('keydown',e=>{
-    const its=[...dd.querySelectorAll('.ac-item,.ac-manual')];
+    const its=[...dd.querySelectorAll('.ai,.am')];
     if(e.key==='ArrowDown'){e.preventDefault();hl=Math.min(hl+1,its.length-1);its.forEach((el,i)=>el.classList.toggle('hl',i===hl));}
     else if(e.key==='ArrowUp'){e.preventDefault();hl=Math.max(hl-1,-1);its.forEach((el,i)=>el.classList.toggle('hl',i===hl));}
-    else if(e.key==='Enter'){e.preventDefault();if(hl>=0&&its[hl])its[hl].dispatchEvent(new MouseEvent('mousedown'));else if(inp.value.trim()){addItem(inp.value.trim(),!LIST.some(v=>norm(v)===norm(inp.value.trim())));inp.value='';render('');}}
+    else if(e.key==='Enter'){e.preventDefault();if(hl>=0&&its[hl])its[hl].dispatchEvent(new MouseEvent('mousedown'));else if(inp.value.trim()){add(inp.value.trim(),!list.some(v=>norm(v)===norm(inp.value.trim())));inp.value='';render('');}}
     else if(e.key==='Escape')dd.classList.remove('open');
   });
 }
 
-makeMultiAC('inp-filiere','dd-filiere',FILIERES_LIST,()=>cur.filieres,'tags-filieres','btn-next3');
+// ─── INIT AUTOCOMPLETES ────────────────────────────────────────────────────
+makeSingleAC('inp-ipes','dd-ipes',IPES,(v,isM)=>{
+  document.getElementById('tag-ipes').innerHTML = v
+    ? `<span class="tag${isM?' manual':''}">${v}</span>` : '';
+  if(v && isKnown(v)){
+    S.ipes=v;
+    document.getElementById('codezone').style.display='block';
+    document.getElementById('cname').textContent=v;
+    document.getElementById('inp-code').value='';
+    document.getElementById('coderr').style.display='none';
+    document.getElementById('codebox').classList.remove('err');
+    document.getElementById('btn1').disabled=true;
+    setTimeout(()=>document.getElementById('inp-code').focus(),100);
+  } else if(v){
+    S.ipes=v;
+    document.getElementById('codezone').style.display='none';
+    document.getElementById('btn1').disabled=false;
+  } else {
+    S.ipes='';
+    document.getElementById('codezone').style.display='none';
+    document.getElementById('btn1').disabled=true;
+  }
+},'btn1',true);
 
-// ═══════════════════════════════════════════════════════
-// TABLE EFFECTIFS (ville unique)
-// ═══════════════════════════════════════════════════════
-function buildEffTable(){
+makeSingleAC('inp-ville','dd-ville',VILLES,(v,isM)=>{
+  document.getElementById('tag-ville').innerHTML = v
+    ? `<span class="tag${isM?' manual':''}">${v}</span>` : '';
+  S.ville=v;
+  document.getElementById('btn2').disabled=!v;
+},'btn2',false);
+
+makeMultiAC('inp-filiere','dd-filiere',FILIERES,()=>S.filieres,'tags-filieres','btn3');
+
+// ─── VERIFY CODE ───────────────────────────────────────────────────────────
+function verifyCode(){
+  const val = document.getElementById('inp-code').value.trim().toUpperCase();
+  if(!val) return;
+  const codes = loadC();
+  // Cherche le code en ignorant la casse
+  const key = Object.keys(codes).find(k=>k.trim().toLowerCase()===S.ipes.trim().toLowerCase());
+  const expected = key ? codes[key] : null;
+  if(expected && val === expected){
+    document.getElementById('coderr').style.display='none';
+    document.getElementById('codebox').classList.remove('err');
+    document.getElementById('btn1').disabled=false;
+    showToast('✅ Code validé !');
+  } else {
+    document.getElementById('coderr').style.display='block';
+    document.getElementById('codebox').classList.remove('err');
+    void document.getElementById('codebox').offsetWidth;
+    document.getElementById('codebox').classList.add('err');
+    document.getElementById('inp-code').value='';
+    document.getElementById('inp-code').focus();
+  }
+}
+
+// ─── EFFECTIFS ─────────────────────────────────────────────────────────────
+function buildEff(){
   effData={};
-  cur.filieres.forEach(f=>{effData[f]=0;});
-  const wrap=document.getElementById('eff-table-wrap');
-  wrap.innerHTML=`<div class="eff-ipes-badge">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    ${cur.ipes} — 📍 ${cur.ville}
+  S.filieres.forEach(f=>effData[f]=0);
+  const w=document.getElementById('efftable');
+  w.innerHTML=`<div class="effbadge">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+    ${S.ipes} — 📍 ${S.ville}
   </div>`;
-  cur.filieres.forEach(f=>{
-    const sid='e_'+Math.random().toString(36).slice(2,10);
-    window['_k_'+sid]=f;
-    const block=document.createElement('div'); block.className='eff-filiere-block';
-    block.innerHTML=`<div class="eff-filiere-header">${ICO_BOOK} ${f}</div>
-      <div class="eff-ville-row">
-        <div class="eff-controls" style="width:100%;justify-content:center;">
-          <button class="eff-btn" onclick="adjEff('${sid}',-10)">−10</button>
-          <button class="eff-btn" onclick="adjEff('${sid}',-1)">−</button>
-          <input class="eff-num" type="number" id="${sid}" value="0" min="0" oninput="setEff('${sid}',this.value)" style="width:80px;font-size:28px;">
-          <button class="eff-btn" onclick="adjEff('${sid}',1)">+</button>
-          <button class="eff-btn" onclick="adjEff('${sid}',10)">+10</button>
-        </div>
+  S.filieres.forEach(f=>{
+    const id='e'+Math.random().toString(36).slice(2,9);
+    window['_f'+id]=f;
+    const b=document.createElement('div'); b.className='effblock';
+    b.innerHTML=`<div class="effhdr">${IBOOK} ${f}</div>
+      <div class="effrow">
+        <button class="effbtn" onclick="ae('${id}',-10)">−10</button>
+        <button class="effbtn" onclick="ae('${id}',-1)">−</button>
+        <input class="effnum" type="number" id="${id}" value="0" min="0" oninput="se('${id}',this.value)">
+        <button class="effbtn" onclick="ae('${id}',1)">+</button>
+        <button class="effbtn" onclick="ae('${id}',10)">+10</button>
       </div>`;
-    wrap.appendChild(block);
+    w.appendChild(b);
   });
 }
-function adjEff(id,delta){const f=window['_k_'+id];if(!f)return;effData[f]=Math.max(0,(effData[f]||0)+delta);document.getElementById(id).value=effData[f];}
-function setEff(id,val){const f=window['_k_'+id];if(!f)return;effData[f]=Math.max(0,parseInt(val)||0);}
+function ae(id,d){const f=window['_f'+id];if(!f)return;effData[f]=Math.max(0,(effData[f]||0)+d);document.getElementById(id).value=effData[f];}
+function se(id,v){const f=window['_f'+id];if(!f)return;effData[f]=Math.max(0,parseInt(v)||0);}
 
-// ═══════════════════════════════════════════════════════
-// RÉCAP
-// ═══════════════════════════════════════════════════════
+// ─── RÉCAP ─────────────────────────────────────────────────────────────────
 function goToRecap(){
-  pendingLines=[];
-  cur.filieres.forEach(f=>{
-    pendingLines.push({filiere:f, ville:cur.ville, effectif:effData[f]||0});
-  });
-  renderRecap(); goTo(5);
+  pending=S.filieres.map(f=>({filiere:f,ville:S.ville,effectif:effData[f]||0}));
+  const tot=pending.reduce((s,l)=>s+l.effectif,0);
+  document.getElementById('recap').innerHTML=`
+    <div class="rtitle">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      ${S.ipes} — 📍 ${S.ville} — <span style="color:var(--accent)">${tot} étudiant${tot!==1?'s':''}</span>
+    </div>
+    <table class="rtable">
+      <thead><tr><th>Filière</th><th style="text-align:right">Effectif</th><th></th></tr></thead>
+      <tbody id="rtbody"></tbody>
+    </table>`;
+  renderRecap();
+  goTo(5);
 }
 function renderRecap(){
-  const total=pendingLines.reduce((s,l)=>s+l.effectif,0);
-  document.getElementById('recap-content').innerHTML=`
-    <div class="summary-ipes-title">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-      ${cur.ipes} — <span style="color:var(--accent)">${total} étudiant${total!==1?'s':''}</span>
-    </div>
-    <table class="summary-table">
-      <thead><tr><th>Filière</th><th>Ville</th><th style="text-align:right">Effectif</th><th></th></tr></thead>
-      <tbody id="recap-tbody"></tbody>
-    </table>`;
-  renderRecapRows();
+  const tb=document.getElementById('rtbody'); if(!tb)return;
+  tb.innerHTML=pending.map((l,i)=>`
+    <tr><td>${l.filiere}</td><td class="ec">${l.effectif}</td>
+    <td><button class="bdel" onclick="pending.splice(${i},1);renderRecap()">✕</button></td></tr>`).join('');
 }
-function renderRecapRows(){
-  const tb=document.getElementById('recap-tbody'); if(!tb)return;
-  tb.innerHTML=pendingLines.map((l,i)=>`
-    <tr><td>${l.filiere}</td><td>📍 ${l.ville}</td>
-    <td class="eff-cell">${l.effectif}</td>
-    <td><button class="btn-del" onclick="delPending(${i})">✕</button></td></tr>`).join('');
-}
-function delPending(i){pendingLines.splice(i,1);renderRecapRows();}
 
-// ═══════════════════════════════════════════════════════
-// SAVE
-// ═══════════════════════════════════════════════════════
+// ─── SAVE ──────────────────────────────────────────────────────────────────
 async function saveAll(){
-  if(!pendingLines.length){showToast('⚠️ Aucune ligne à enregistrer.');return;}
-
-  // Générer/récupérer le code de cet IPES (crée si nouveau)
-  const code = getOrCreateCode(cur.ipes);
-
-  const entry={ipes:cur.ipes,lines:[...pendingLines],date:new Date().toISOString()};
-  const all=loadEntries(); all.push(entry); saveEntries(all);
-
-  // Envoi vers Google Sheets
-  if(SCRIPT_URL && SCRIPT_URL.trim() !== ''){
-    showSendingIndicator(true);
-    try{
-      const rows = pendingLines.map(l=>({
-        ipes: cur.ipes, filiere: l.filiere,
-        ville: l.ville, effectif: l.effectif
-      }));
-      await sendToSheets('addRows', { rows });
-      showToast('✅ Données envoyées vers Google Sheets !');
-    }catch(err){
-      console.error('Sheets error:', err);
-      showToast('⚠️ Envoi échoué — données sauvées localement.');
-    }finally{showSendingIndicator(false);}
+  if(!pending.length){showToast('⚠️ Aucune ligne à enregistrer.');return;}
+  // Assigner un code à cet IPES si pas encore fait
+  getCode(S.ipes);
+  // Sauvegarder localement
+  const all=loadE();
+  all.push({ipes:S.ipes,ville:S.ville,lines:[...pending],date:new Date().toISOString()});
+  saveE(all);
+  // Envoyer vers Sheets
+  if(SCRIPT_URL && SCRIPT_URL.trim()){
+    document.getElementById('sending').classList.add('show');
+    const rows=pending.map(l=>({ipes:S.ipes,filiere:l.filiere,ville:S.ville,effectif:l.effectif}));
+    const ok = await postToSheets('addRows',{rows});
+    document.getElementById('sending').classList.remove('show');
+    showToast(ok ? '✅ Données envoyées vers Google Sheets !' : '⚠️ Envoi échoué — données sauvées localement.');
   } else {
-    showToast('✅ Entrée enregistrée localement.');
+    showToast('✅ Données enregistrées localement.');
   }
-
-  renderUserEntries(); newEntry();
+  document.getElementById('user-result').innerHTML=`
+    <div style="background:var(--accent-light);border:1px solid var(--accent);border-radius:10px;padding:14px 18px;font-size:13px;color:var(--accent)">
+      Merci ! Vos données ont été enregistrées avec succès.
+    </div>`;
+  newEntry();
 }
 
-// ═══════════════════════════════════════════════════════
-// ENVOI GOOGLE SHEETS — formulaire HTML invisible
-// Fonctionne sur GitHub Pages sans problème CORS
-// ═══════════════════════════════════════════════════════
-function sendToSheets(action, payload) {
-  return new Promise((resolve) => {
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = SCRIPT_URL;
-    form.target = '_sheets_target_';
-    form.style.display = 'none';
-
-    const addField = (name, value) => {
-      const inp = document.createElement('input');
-      inp.type = 'hidden';
-      inp.name = name;
-      inp.value = value;
-      form.appendChild(inp);
-    };
-
-    addField('action', action);
-    addField('data', JSON.stringify(payload));
-
-    // iframe cible invisible
-    let iframe = document.getElementById('_sheets_iframe_');
-    if (!iframe) {
-      iframe = document.createElement('iframe');
-      iframe.name = '_sheets_target_';
-      iframe.id   = '_sheets_iframe_';
-      iframe.style.display = 'none';
+// ─── ENVOI SHEETS — formulaire POST invisible ──────────────────────────────
+function postToSheets(action, payload){
+  return new Promise(resolve=>{
+    try{
+      // Créer iframe cible
+      const iid='_sf_'+Date.now();
+      const iframe=document.createElement('iframe');
+      iframe.name=iid; iframe.style.display='none';
+      iframe.onload=()=>{ resolve(true); };
+      setTimeout(()=>resolve(true),8000);
       document.body.appendChild(iframe);
-    }
-
-    iframe.onload = () => resolve('ok');
-    setTimeout(() => resolve('timeout'), 10000);
-
-    document.body.appendChild(form);
-    form.submit();
-    setTimeout(() => { try { document.body.removeChild(form); } catch{} }, 500);
+      // Créer formulaire
+      const form=document.createElement('form');
+      form.method='POST'; form.action=SCRIPT_URL; form.target=iid; form.style.display='none';
+      const fa=(n,v)=>{const i=document.createElement('input');i.type='hidden';i.name=n;i.value=v;form.appendChild(i);};
+      fa('action',action); fa('data',JSON.stringify(payload));
+      document.body.appendChild(form);
+      form.submit();
+      setTimeout(()=>{try{document.body.removeChild(form);document.body.removeChild(iframe);}catch{}},10000);
+    }catch(e){ resolve(false); }
   });
 }
 
-async function testSheetsConnection() {
-  const btn    = document.getElementById('test-sheets-btn');
-  const result = document.getElementById('test-sheets-result');
-  if (!SCRIPT_URL || !SCRIPT_URL.trim()) {
-    result.innerHTML = '❌ <strong>SCRIPT_URL vide</strong> — configurez l\'URL dans le fichier HTML.';
-    result.style.color = 'var(--danger)'; return;
+// ─── TEST CONNEXION ────────────────────────────────────────────────────────
+async function testSheets(){
+  const btn=document.getElementById('testbtn'), r=document.getElementById('testresult');
+  if(!SCRIPT_URL||!SCRIPT_URL.trim()){
+    r.innerHTML='❌ SCRIPT_URL non configuré.'; r.style.color='var(--danger)'; return;
   }
-  btn.disabled = true; btn.textContent = 'Test en cours…';
-  result.textContent = 'Envoi en cours…';
-  result.style.color = 'var(--muted)';
-  const r = await sendToSheets('test', { message: 'TEST connexion', date: new Date().toISOString() });
-  btn.disabled = false; btn.textContent = 'Tester la connexion Sheets';
-  if (r === 'ok' || r === 'timeout') {
-    result.innerHTML = '✅ <strong>Requête envoyée.</strong> Vérifiez que la ligne TEST est apparue dans votre Google Sheet (onglet <em>Effectifs</em>). Si oui, la connexion fonctionne.';
-    result.style.color = 'var(--success)';
-  } else {
-    result.innerHTML = '❌ Échec — vérifiez l\'URL du script et le déploiement.';
-    result.style.color = 'var(--danger)';
-  }
+  btn.disabled=true; btn.textContent='Test en cours…'; r.textContent=''; r.style.color='var(--muted)';
+  const ok=await postToSheets('test',{date:new Date().toISOString()});
+  btn.disabled=false; btn.textContent='Tester la connexion';
+  r.innerHTML=ok
+    ? '✅ Requête envoyée — vérifiez qu\'une ligne TEST est apparue dans votre Sheet.'
+    : '❌ Échec — vérifiez l\'URL et le déploiement.';
+  r.style.color=ok?'var(--success)':'var(--danger)';
 }
 
-// Vérifier un code IPES en ligne (depuis Google Sheets)
-async function checkCodeOnline(ipes, codeEntered) {
-  if (!SCRIPT_URL || !SCRIPT_URL.trim()) return null; // fallback local
-  try {
-    const url = SCRIPT_URL + '?action=checkCode&ipes=' + encodeURIComponent(ipes) + '&code=' + encodeURIComponent(codeEntered.trim().toUpperCase());
-    const resp = await fetch(url);
-    const json = await resp.json();
-    return json.valid === true;
-  } catch(e) {
-    return null; // si erreur réseau, fallback sur local
-  }
-}
-
-// Charger les codes depuis Sheets au démarrage (cache local)
-async function syncCodesFromSheets() {
-  if (!SCRIPT_URL || !SCRIPT_URL.trim()) return;
-  try {
-    const url = SCRIPT_URL + '?action=getCodes';
-    const resp = await fetch(url);
-    const json = await resp.json();
-    if (json.codes) {
-      saveCodes(json.codes);
-      console.log('Codes synchronisés depuis Sheets :', Object.keys(json.codes).length);
-    }
-  } catch(e) {
-    console.log('Sync codes échoué, utilisation du cache local');
-  }
-}
-  const all=loadEntries();
-  const meta=document.getElementById('entries-meta');
-  const list=document.getElementById('entries-list');
-  if(!all.length){
-    if(meta)meta.textContent='';
-    if(list)list.innerHTML='';
-    return;
-  }
-  const totalEff=all.reduce((s,g)=>g.lines.reduce((ss,l)=>ss+l.effectif,0)+s,0);
-  if(meta)meta.textContent=`${all.length} IPES · ${totalEff} étudiants enregistrés au total`;
-  if(list)list.innerHTML=`<div style="background:var(--accent-light);border:1px solid var(--accent);border-radius:10px;padding:14px 18px;font-size:13px;color:var(--accent);">
-    Merci pour votre saisie ! L'administrateur peut consulter et exporter les données.
-  </div>`;
-}
-
-// ═══════════════════════════════════════════════════════
-// NOUVEAU IPES
-// ═══════════════════════════════════════════════════════
+// ─── NEW ENTRY ─────────────────────────────────────────────────────────────
 function newEntry(){
-  cur={ipes:'',ville:'',filieres:[]};
-  effData={}; pendingLines=[];
-  ['inp-ipes','inp-ville','inp-filiere'].forEach(id=>{const e=document.getElementById(id);e.value='';e.classList.remove('has-value','manual-v');});
+  S={ipes:'',ville:'',filieres:[]};
+  effData={}; pending=[];
+  ['inp-ipes','inp-ville','inp-filiere'].forEach(id=>{
+    const e=document.getElementById(id); e.value=''; e.classList.remove('ok','manual');
+  });
   document.getElementById('tag-ipes').innerHTML='';
   document.getElementById('tag-ville').innerHTML='';
   document.getElementById('tags-filieres').innerHTML='';
-  document.getElementById('code-zone').style.display='none';
-  document.getElementById('btn-next1').disabled=true;
-  document.getElementById('btn-next2').disabled=true;
-  document.getElementById('btn-next3').disabled=true;
+  document.getElementById('codezone').style.display='none';
+  document.getElementById('btn1').disabled=true;
+  document.getElementById('btn2').disabled=true;
+  document.getElementById('btn3').disabled=true;
   goTo(1);
 }
 
-// ═══════════════════════════════════════════════════════
-// NAVIGATION STEPS
-// ═══════════════════════════════════════════════════════
+// ─── NAVIGATION ────────────────────────────────────────────────────────────
 function goTo(n){
-  document.getElementById('step'+currentStep).classList.remove('active');
-  currentStep=n;
+  document.getElementById('step'+step).classList.remove('active');
+  step=n;
   document.getElementById('step'+n).classList.add('active');
   for(let i=1;i<=5;i++){
     const ps=document.getElementById('ps'+i);
     ps.classList.remove('active','done');
-    if(i<n)ps.classList.add('done');else if(i===n)ps.classList.add('active');
+    if(i<n)ps.classList.add('done'); else if(i===n)ps.classList.add('active');
   }
-  for(let i=1;i<=4;i++)document.getElementById('ln'+i).style.width=(i<n?'100%':'0%');
+  for(let i=1;i<=4;i++) document.getElementById('ln'+i).style.width=i<n?'100%':'0%';
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ═══════════════════════════════════════════════════════
-// ADMIN AUTH
-// ═══════════════════════════════════════════════════════
-function checkAdminPwd(){
-  const input=document.getElementById('admin-pwd-input');
-  const errEl=document.getElementById('admin-error');
-  if(input.value===ADMIN_PASSWORD){
-    isAdminAuthenticated=true;
-    document.getElementById('admin-lock').style.display='none';
-    document.getElementById('admin-content').style.display='block';
-    errEl.style.display='none';
-    renderAdminContent();
-    showToast('🔓 Accès administrateur accordé');
+// ─── ADMIN ─────────────────────────────────────────────────────────────────
+function adminLogin(){
+  const p=document.getElementById('apwd');
+  if(p.value===ADMIN_PASSWORD){
+    isAdmin=true;
+    document.getElementById('alock').style.display='none';
+    document.getElementById('acontent').style.display='block';
+    document.getElementById('aerr').style.display='none';
+    renderAdmin();
+    showToast('🔓 Accès accordé');
   } else {
-    errEl.style.display='block';
-    input.value='';
-    input.style.borderColor='var(--danger)';
-    setTimeout(()=>input.style.borderColor='var(--border)',1500);
+    document.getElementById('aerr').style.display='block';
+    p.value=''; p.style.borderColor='var(--danger)';
+    setTimeout(()=>p.style.borderColor='var(--border)',1500);
   }
 }
 function adminLogout(){
-  isAdminAuthenticated=false;
-  document.getElementById('admin-lock').style.display='block';
-  document.getElementById('admin-content').style.display='none';
-  document.getElementById('admin-pwd-input').value='';
-  document.getElementById('admin-error').style.display='none';
+  isAdmin=false;
+  document.getElementById('alock').style.display='block';
+  document.getElementById('acontent').style.display='none';
+  document.getElementById('apwd').value='';
   showToast('🔒 Déconnecté');
 }
 
-// ═══════════════════════════════════════════════════════
-// ONGLETS ADMIN
-// ═══════════════════════════════════════════════════════
-function showTab(name){
-  ['codes','data','export'].forEach(t=>{
-    document.getElementById('tab-'+t).style.display = t===name?'block':'none';
-    const btn=document.getElementById('tab-'+t+'-btn');
-    btn.style.color = t===name?'var(--accent)':'var(--muted)';
-    btn.style.borderBottomColor = t===name?'var(--accent)':'transparent';
+function showTab(t){
+  ['codes','data','exp'].forEach(id=>{
+    document.getElementById('t-'+id).style.display=id===t?'block':'none';
+    document.getElementById('t-'+id+'-btn').classList.toggle('on',id===t);
   });
 }
 
-// ═══════════════════════════════════════════════════════
-// RENDU ADMIN
-// ═══════════════════════════════════════════════════════
-function renderAdminContent(){
-  const all=loadEntries();
-  const codes=loadCodes();
-  const totalLines=all.reduce((s,g)=>s+g.lines.length,0);
-  const totalEff=all.reduce((s,g)=>g.lines.reduce((ss,l)=>ss+l.effectif,0)+s,0);
-  const totalCodes=Object.keys(codes).length;
-
+function renderAdmin(){
+  const all=loadE(), codes=loadC();
+  const tl=all.reduce((s,g)=>s+g.lines.length,0);
+  const te=all.reduce((s,g)=>g.lines.reduce((ss,l)=>ss+l.effectif,0)+s,0);
   // Stats
-  document.getElementById('admin-stats').innerHTML=[
-    ['IPES soumis',all.length],['Lignes',totalLines],['Étudiants',totalEff],['Codes générés',totalCodes]
-  ].map(([label,val])=>`<div style="background:var(--paper);border:1px solid var(--border);border-radius:8px;padding:10px 16px;min-width:110px;">
-    <div style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);">${label}</div>
-    <div style="font-family:'Instrument Serif',serif;font-size:24px;color:var(--accent);">${val}</div>
-  </div>`).join('');
-
-  renderCodesTable();
-
-  // Tableau des données
-  const adminList=document.getElementById('admin-entries-list');
-  if(!all.length){
-    adminList.innerHTML=`<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;border:1.5px dashed var(--border);border-radius:10px;">Aucune donnée enregistrée.</div>`;
-  } else {
-    adminList.innerHTML=all.map((g,gi)=>{
-      const tot=g.lines.reduce((s,l)=>s+l.effectif,0);
-      const date=g.date?new Date(g.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-      return `<div class="entry-group" style="margin-bottom:10px;">
-        <div class="entry-group-hdr">
-          <span>🏫 ${g.ipes} — ${tot} étudiant${tot!==1?'s':''} <span style="opacity:.6;font-size:11px;margin-left:8px;">${date}</span></span>
-          <button class="del-group-btn" onclick="deleteGroup(${gi})">Supprimer</button>
-        </div>
-        <table class="summary-table">
-          <thead><tr><th>Filière</th><th>Ville</th><th style="text-align:right">Effectif</th><th></th></tr></thead>
-          <tbody>${g.lines.map((l,li)=>`
-            <tr><td>${l.filiere}</td><td>📍 ${l.ville}</td>
-            <td class="eff-cell">${l.effectif}</td>
-            <td><button class="btn-del" onclick="deleteLine(${gi},${li})">✕</button></td></tr>`).join('')}
-          </tbody>
-        </table>
-      </div>`;
-    }).join('');
-  }
-
-  updateCSV();
+  document.getElementById('astats').innerHTML=[['IPES soumis',all.length],['Lignes',tl],['Étudiants',te],['Codes',Object.keys(codes).length]]
+    .map(([l,v])=>`<div style="background:var(--paper);border:1px solid var(--border);border-radius:8px;padding:10px 16px;min-width:100px">
+      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)">${l}</div>
+      <div style="font-family:'Instrument Serif',serif;font-size:24px;color:var(--accent)">${v}</div>
+    </div>`).join('');
+  renderCodesTab();
+  renderDataTab(all);
+  renderCSV(all);
 }
 
-// Génère les codes pour tous les IPES de la liste qui n'en ont pas encore
-function generateAllCodes(){
-  const codes=loadCodes();
-  let count=0;
-  IPES_LIST.forEach(ipes=>{
-    if(!codes[ipes]){ codes[ipes]=generateCode(); count++; }
-  });
-  saveCodes(codes);
-  renderCodesTable();
-  // Mettre à jour stats
-  document.querySelector('#admin-stats div:last-child div:last-child').textContent=Object.keys(codes).length;
-  showToast(`✅ ${count} code${count!==1?'s':''} généré${count!==1?'s':''} !`);
-}
-
-// Génère le code d'un seul IPES
-function generateOneCode(ipes){
-  const codes=loadCodes();
-  if(!codes[ipes]){ codes[ipes]=generateCode(); saveCodes(codes); }
-  renderCodesTable();
-  showToast(`✅ Code généré pour ${ipes} : ${codes[ipes]}`);
-}
-
-// Régénère (force) le code d'un IPES (réservé admin)
-function regenCode(ipes){
-  if(!confirm(`Régénérer le code de ${ipes} ? L'ancien code ne fonctionnera plus.`)) return;
-  const codes=loadCodes();
-  codes[ipes]=generateCode();
-  saveCodes(codes);
-  renderCodesTable();
-  showToast(`🔄 Nouveau code pour ${ipes} : ${codes[ipes]}`);
-}
-
-// Affiche le tableau des codes avec filtre de recherche
-function renderCodesTable(){
-  const codes=loadCodes();
-  const all=loadEntries();
-  const q=norm((document.getElementById('code-search')||{}).value||'');
-  const wrap=document.getElementById('codes-table-wrap');
-  if(!wrap) return;
-
-  // Tous les IPES de la liste + ceux qui ont un code mais ne sont pas dans la liste
-  const allIpes=[...new Set([...IPES_LIST, ...Object.keys(codes)])];
-  const filtered=q ? allIpes.filter(v=>norm(v).includes(q)) : allIpes;
-
-  const withCode=filtered.filter(v=>codes[v]);
-  const withoutCode=filtered.filter(v=>!codes[v]);
-
-  let html='';
-
-  if(withCode.length){
-    html+=`<div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;margin-top:4px;">
-      Codes attribués (${withCode.length})
-    </div>
-    <table class="codes-table" style="margin-bottom:20px;">
-      <thead><tr><th>IPES</th><th>Code</th><th>Soumissions</th><th style="width:160px">Actions</th></tr></thead>
-      <tbody>${withCode.map(ipes=>{
-        const code=codes[ipes];
-        const count=all.filter(e=>norm(e.ipes)===norm(ipes)).length;
+// ─── ONGLET CODES ──────────────────────────────────────────────────────────
+function renderCodesTab(){
+  const codes=loadC(), all=loadE();
+  const q=norm((document.getElementById('codesearch')||{}).value||'');
+  const allIpes=[...new Set([...IPES,...Object.keys(codes)])];
+  const filtered=q?allIpes.filter(v=>norm(v).includes(q)):allIpes;
+  const withC=filtered.filter(v=>codes[v]);
+  const noC=filtered.filter(v=>!codes[v]);
+  let h='';
+  if(withC.length){
+    h+=`<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px">Codes attribués (${withC.length})</div>
+    <table class="ctable" style="margin-bottom:20px">
+      <thead><tr><th>IPES</th><th>Code</th><th>Soumissions</th><th></th></tr></thead>
+      <tbody>${withC.map(v=>{
+        const cnt=all.filter(e=>e.ipes.trim().toLowerCase()===v.trim().toLowerCase()).length;
+        const code=codes[v];
+        const esc=v.replace(/'/g,"\\'");
         return `<tr>
-          <td style="font-weight:500">${ipes}</td>
-          <td><span class="code-pill">${code}</span></td>
-          <td style="color:var(--muted);font-size:12px">${count} soumission${count!==1?'s':''}</td>
-          <td style="display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;">
-            <button class="copy-code-btn" onclick="navigator.clipboard.writeText('${code}').then(()=>showToast('📋 Code ${ipes} copié !'))">Copier</button>
-            <button class="copy-code-btn" style="color:var(--danger);border-color:#e8d5d5;" onclick="regenCode('${ipes.replace(/'/g,"\\'")}')">Régénérer</button>
-          </td>
-        </tr>`;
-      }).join('')}</tbody>
-    </table>`;
+          <td style="font-weight:500">${v}</td>
+          <td><span class="cpill">${code}</span></td>
+          <td style="color:var(--muted);font-size:12px">${cnt}</td>
+          <td style="display:flex;gap:6px;padding:8px 12px">
+            <button class="cbtn" onclick="navigator.clipboard.writeText('${code}').then(()=>showToast('📋 ${esc} : ${code} copié !'))">Copier</button>
+            <button class="cbtn" style="color:var(--danger);border-color:#e8d5d5" onclick="regenCode('${esc}')">Régénérer</button>
+          </td></tr>`;
+      }).join('')}</tbody></table>`;
   }
-
-  if(withoutCode.length){
-    html+=`<div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">
-      Sans code (${withoutCode.length}) — cliquez pour générer
-    </div>
-    <table class="codes-table">
+  if(noC.length){
+    h+=`<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px">Sans code (${noC.length})</div>
+    <table class="ctable">
       <thead><tr><th>IPES</th><th>Code</th><th></th></tr></thead>
-      <tbody>${withoutCode.map(ipes=>`<tr>
-        <td style="font-weight:500;color:var(--muted)">${ipes}</td>
-        <td><span style="font-size:12px;color:var(--muted);font-style:italic">Non généré</span></td>
-        <td><button class="copy-code-btn" style="color:var(--success);border-color:#a0d4b8;" onclick="generateOneCode('${ipes.replace(/'/g,"\\'")}')">
-          + Générer
-        </button></td>
-      </tr>`).join('')}</tbody>
-    </table>`;
+      <tbody>${noC.map(v=>{
+        const esc=v.replace(/'/g,"\\'");
+        return `<tr>
+          <td style="font-weight:500;color:var(--muted)">${v}</td>
+          <td style="font-size:12px;color:var(--muted);font-style:italic">Non généré</td>
+          <td><button class="cbtn gen" onclick="genOneCode('${esc}')">+ Générer</button></td></tr>`;
+      }).join('')}</tbody></table>`;
   }
-
-  if(!filtered.length){
-    html=`<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;">Aucun IPES trouvé pour "${q}".</div>`;
-  }
-
-  wrap.innerHTML=html;
+  if(!filtered.length) h=`<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">Aucun résultat.</div>`;
+  document.getElementById('codestable').innerHTML=h;
 }
 
-// Imprimer / exporter PDF
-function downloadCodesPDF(){
-  const codes=loadCodes();
-  if(!Object.keys(codes).length){ showToast('Aucun code à imprimer.'); return; }
-  const rows=Object.entries(codes).map(([ipes,code])=>
-    `<tr><td style="padding:8px 12px;border-bottom:1px solid #eee;font-weight:500">${ipes}</td>
-     <td style="padding:8px 12px;border-bottom:1px solid #eee;font-family:monospace;font-size:16px;font-weight:700;letter-spacing:.15em;color:#1a56a0">${code}</td></tr>`
-  ).join('');
-  const win=window.open('','_blank');
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Codes IPES</title>
-  <style>body{font-family:Arial,sans-serif;padding:30px;color:#0f1923}h2{margin-bottom:6px}p{color:#7a7268;font-size:13px;margin-bottom:20px}
-  table{width:100%;border-collapse:collapse}th{background:#0f1923;color:#fff;padding:9px 12px;text-align:left;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
-  tr:nth-child(even) td{background:#f7f5f0}@media print{.no-print{display:none}}</style></head>
-  <body>
-  <h2>Codes d'accès IPES — Saisie des Effectifs</h2>
-  <p>Généré le ${new Date().toLocaleDateString('fr-FR')} — Ces codes sont confidentiels. Transmettez-les uniquement aux responsables concernés.</p>
-  <button class="no-print" onclick="window.print()" style="margin-bottom:16px;padding:8px 16px;cursor:pointer;background:#1a56a0;color:#fff;border:none;border-radius:6px;font-size:13px;">🖨️ Imprimer</button>
-  <table><thead><tr><th>IPES</th><th>Code d'accès</th></tr></thead><tbody>${rows}</tbody></table>
-  </body></html>`);
-  win.document.close();
+function genAllCodes(){
+  const codes=loadC(); let n=0;
+  IPES.forEach(v=>{if(!codes[v]){codes[v]=mkCode();n++;}});
+  saveC(codes); renderCodesTab(); renderAdmin();
+  showToast(`✅ ${n} code${n!==1?'s':''} généré${n!==1?'s':''}`);
 }
-
-function deleteGroup(gi){
-  const all=loadEntries(); all.splice(gi,1); saveEntries(all);
-  renderAdminContent();
+function genOneCode(v){
+  const codes=loadC(); if(!codes[v]){codes[v]=mkCode();saveC(codes);}
+  renderCodesTab(); showToast(`✅ Code généré pour ${v}`);
 }
-function deleteLine(gi,li){
-  const all=loadEntries();
-  all[gi].lines.splice(li,1);
-  if(!all[gi].lines.length) all.splice(gi,1);
-  saveEntries(all); renderAdminContent();
+function regenCode(v){
+  if(!confirm(`Régénérer le code de ${v} ? L'ancien ne fonctionnera plus.`)) return;
+  const codes=loadC(); codes[v]=mkCode(); saveC(codes); renderCodesTab();
+  showToast(`🔄 Nouveau code pour ${v}`);
 }
-function clearAllData(){
-  if(!confirm('⚠️ Supprimer TOUTES les données ? Cette action est irréversible.'))return;
-  localStorage.removeItem(STORAGE_KEY);
-  renderAdminContent();
-  showToast('🗑️ Données effacées.');
-}
-
-// ═══════════════════════════════════════════════════════
-// COPIER TOUS LES CODES
-// ═══════════════════════════════════════════════════════
 function copyAllCodes(){
-  const codes=loadCodes();
-  if(!Object.keys(codes).length){showToast('Aucun code à copier.');return;}
-  const txt=Object.entries(codes).map(([ipes,code])=>`${ipes} : ${code}`).join('\n');
-  navigator.clipboard.writeText(txt).then(()=>showToast('📋 Tous les codes copiés !'));
+  const codes=loadC();
+  if(!Object.keys(codes).length){showToast('Aucun code.');return;}
+  navigator.clipboard.writeText(Object.entries(codes).map(([k,v])=>`${k} : ${v}`).join('\n'))
+    .then(()=>showToast('📋 Tous les codes copiés !'));
+}
+function printCodes(){
+  const codes=loadC();
+  if(!Object.keys(codes).length){showToast('Aucun code à imprimer.');return;}
+  const rows=Object.entries(codes).map(([k,v])=>`<tr><td style="padding:7px 12px;border-bottom:1px solid #eee;font-weight:500">${k}</td><td style="padding:7px 12px;border-bottom:1px solid #eee;font-family:monospace;font-size:15px;font-weight:700;letter-spacing:.15em;color:#1a56a0">${v}</td></tr>`).join('');
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Codes IPES</title>
+  <style>body{font-family:Arial,sans-serif;padding:30px;color:#0f1923}h2{margin-bottom:4px}p{color:#7a7268;font-size:13px;margin-bottom:20px}
+  table{width:100%;border-collapse:collapse}th{background:#0f1923;color:#fff;padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.07em}
+  .np{display:none}@media print{.np{display:none}}</style></head>
+  <body><h2>Codes d'accès IPES — Saisie des Effectifs</h2>
+  <p>Généré le ${new Date().toLocaleDateString('fr-FR')} — Confidentiel. Transmettez uniquement aux responsables.</p>
+  <button class="np" onclick="window.print()" style="margin-bottom:14px;padding:7px 14px;cursor:pointer;background:#1a56a0;color:#fff;border:none;border-radius:6px">🖨️ Imprimer</button>
+  <table><thead><tr><th>IPES</th><th>Code d'accès</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);
+  w.document.close();
 }
 
-// ═══════════════════════════════════════════════════════
-// CSV
-// ═══════════════════════════════════════════════════════
+// ─── ONGLET DONNÉES ────────────────────────────────────────────────────────
+function renderDataTab(all){
+  const el=document.getElementById('datalist');
+  if(!all.length){
+    el.innerHTML=`<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px;border:1.5px dashed var(--border);border-radius:10px">Aucune donnée.</div>`;
+    return;
+  }
+  el.innerHTML=all.map((g,gi)=>{
+    const tot=g.lines.reduce((s,l)=>s+l.effectif,0);
+    const d=g.date?new Date(g.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+    return `<div class="egroup">
+      <div class="eghdr">
+        <span>🏫 ${g.ipes} — 📍 ${g.ville||''} — ${tot} étudiant${tot!==1?'s':''} <span style="opacity:.6;font-size:11px;margin-left:8px">${d}</span></span>
+        <button class="dgbtn" onclick="delGroup(${gi})">Supprimer</button>
+      </div>
+      <table class="rtable">
+        <thead><tr><th>Filière</th><th style="text-align:right">Effectif</th><th></th></tr></thead>
+        <tbody>${g.lines.map((l,li)=>`
+          <tr><td>${l.filiere}</td><td class="ec">${l.effectif}</td>
+          <td><button class="bdel" onclick="delLine(${gi},${li})">✕</button></td></tr>`).join('')}
+        </tbody></table></div>`;
+  }).join('');
+}
+function delGroup(gi){const a=loadE();a.splice(gi,1);saveE(a);renderAdmin();}
+function delLine(gi,li){const a=loadE();a[gi].lines.splice(li,1);if(!a[gi].lines.length)a.splice(gi,1);saveE(a);renderAdmin();}
+function clearData(){if(!confirm('Supprimer TOUTES les données ?'))return;localStorage.removeItem(SK);renderAdmin();showToast('🗑️ Données effacées');}
+
+// ─── CSV ───────────────────────────────────────────────────────────────────
 function buildCSV(){
-  const all=loadEntries();
+  const all=loadE();
   const rows=['"IPES","FILIERE","VILLE","EFFECTIF","DATE"'];
   all.forEach(g=>g.lines.forEach(l=>{
-    const date=g.date?new Date(g.date).toLocaleDateString('fr-FR'):'';
-    rows.push([g.ipes,l.filiere,l.ville,l.effectif,date].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));
+    const d=g.date?new Date(g.date).toLocaleDateString('fr-FR'):'';
+    rows.push([g.ipes,l.filiere,g.ville||l.ville||'',l.effectif,d].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));
   }));
   return rows.join('\n');
 }
-function updateCSV(){const el=document.getElementById('csv-area');if(el)el.value=buildCSV();}
-function copyCSV(){navigator.clipboard.writeText(buildCSV()).then(()=>showToast('📋 CSV copié !'));}
-function downloadCSV(){
+function renderCSV(all){ const el=document.getElementById('csvarea'); if(el)el.value=buildCSV(); }
+function copyCSV(){ navigator.clipboard.writeText(buildCSV()).then(()=>showToast('📋 CSV copié !')); }
+function dlCSV(){
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([buildCSV()],{type:'text/csv;charset=utf-8;'}));
-  a.download='effectifs_ipes_'+new Date().toISOString().slice(0,10)+'.csv';
-  a.click();
+  a.download='effectifs_'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
 }
 
-// ═══════════════════════════════════════════════════════
-// INDICATEUR D'ENVOI
-// ═══════════════════════════════════════════════════════
-function showSendingIndicator(on){
-  let el=document.getElementById('sending-ind');
-  if(!el){
-    el=document.createElement('div'); el.id='sending-ind';
-    el.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#0f1923;color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:500;z-index:1000;display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,.3)';
-    el.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="animation:spin 1s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>Envoi vers Google Sheets…';
-    const st=document.createElement('style');st.textContent='@keyframes spin{to{transform:rotate(360deg)}}';
-    document.head.appendChild(st); document.body.appendChild(el);
-  }
-  el.style.display=on?'flex':'none';
-}
-
-// ═══════════════════════════════════════════════════════
-// TOAST
-// ═══════════════════════════════════════════════════════
+// ─── TOAST ─────────────────────────────────────────────────────────────────
 function showToast(msg){
-  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),2800);
 }
-
-// Init
-renderUserEntries();
-syncCodesFromSheets(); // Synchronise les codes depuis Sheets au démarrage
 </script>
 </body>
 </html>
